@@ -1,0 +1,73 @@
+{
+  "name": "your-app-name",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "publish:osx": "yarn electron:build -p always",
+    "publish:win": "yarn electron:build -- --win  --x64 --ia32 -p always",
+    "publish:linux": "yarn electron:build -- --linux -p always",
+    "publish:all": "yarn run publish:osx && yarn run publish:win && yarn run publish:linux",
+    "build:osx": "yarn electron:build -p never",
+    "build:win": "yarn electron:build -p never -- --win  --x64 --ia32",
+    "build:linux": "yarn electron:build -p never -- --linux",
+    "build:all": "yarn run build:osx && yarn run build:win && yarn run build:linux",
+    "electron:keypair": "node generateKeypair.js",
+    "electron:license": "node generateLicense.js",
+    "electron:icon": "electron-icon-builder --input=./appIcon/icon.png --output=./build --flatten",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "@sentry/electron": "^2.0.0",
+    "core-js": "^3.6.5",
+    "electron-store": "^6.0.0",
+    "electron-updater": "^4.3.4",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "babel-eslint": "^10.1.0",
+    "dotenv": "^8.2.0",
+    "electron": "^9.0.0",
+    "electron-devtools-installer": "^3.1.0",
+    "electron-icon-builder": "^1.0.2",
+    "electron-notarize": "^1.0.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "prompts": "^2.3.2",
+    "tailwindcss": "^1.7.1",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.4",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "globals": {
+      "__static": "readable",
+      "mainStorage": "writable"
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
