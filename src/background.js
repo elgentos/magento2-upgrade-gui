@@ -1,11 +1,10 @@
 'use strict'
 
-import { app, Menu, protocol, BrowserWindow, dialog } from 'electron'
+import { app, Menu, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
-import {readFileSync} from "atomically";
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
 // import * as Sentry from '@sentry/electron';
@@ -20,6 +19,16 @@ let win
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+ipcMain.on('openProjectDir', function () {
+  openFileDialog()
+})
+
+let vendorCheckDiffs
+
+ipcMain.on('vendorFilePathChosen', function (data) {
+
+})
 
 function createWindow() {
   // Create the browser window.
@@ -40,7 +49,7 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    if (!process.env.IS_TEST) win.webContents.openDevTools({mode:'bottom'})
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -58,14 +67,19 @@ function createWindow() {
   })
 }
 
+function parseOutputTable(output) {
+  return output.split("\n").filter(function (line) {
+    // See https://github.com/AmpersandHQ/ampersand-magento2-upgrade-patch-helper/blob/master/src/Ampersand/PatchHelper/Helper/PatchOverrideValidator.php#L7
+    return line.indexOf('Preference') > 0 || line.indexOf('Plugin') > 0 || line.indexOf('Override') > 0;
+  }).map(function (line) {
+    return line.split("|").map(function (item) { return item.trim(); }).splice(1);
+  });
+}
+
 function openFileDialog() {
   const fs = require('fs');
   const selectedMagento2ProjectDir = dialog.showOpenDialogSync({
     title: 'Select Magento 2 project directory',
-    // filters: [{
-    //   name: 'Patch Files',
-    //   extensions: ['patch']
-    // }],
     properties: [
         'openDirectory'
     ]
@@ -75,34 +89,42 @@ function openFileDialog() {
     return;
   }
 
-  let vendorPatchFile = selectedMagento2ProjectDir + '/vendor.patch';
+  const vendorPatchFile = selectedMagento2ProjectDir + '/vendor.patch';
   if (!fs.existsSync(vendorPatchFile)) {
     dialog.showErrorBox('File not found', 'No vendor.patch diff file found in your Magento 2 project directory!');
   }
 
-  let vendorCheckPatchFile = selectedMagento2ProjectDir + '/vendor_files_to_check.patch';
+  const vendorCheckPatchFile = selectedMagento2ProjectDir + '/vendor_files_to_check.patch';
   if (!fs.existsSync(vendorCheckPatchFile)) {
     dialog.showErrorBox('File not found', 'No vendor_files_to_check.patch diff file found in your Magento 2 project directory!');
   }
 
-  let outputFile = selectedMagento2ProjectDir + '/output.txt';
+  const outputFile = selectedMagento2ProjectDir + '/output.txt';
   if (!fs.existsSync(outputFile)) {
     dialog.showErrorBox('File not found', 'No output.txt overview file found in your Magento 2 project directory!');
   }
 
-  let vendorDir = selectedMagento2ProjectDir + '/vendor';
+  const vendorDir = selectedMagento2ProjectDir + '/vendor';
   if (!fs.existsSync(vendorDir)) {
     dialog.showErrorBox('Directory not found', 'No vendor directory found in your Magento 2 project directory!');
   }
 
-  // dialog.showMessageBoxSync({
-  //   type: 'info',
-  //   title: 'Files found!',
-  //   message: 'Great! All required files are found; output.txt, vendor.patch, vendor_files_to_check.patch and the vendor directory'
-  // })
+  let output = fs.readFileSync(outputFile).toString();
+  if (output) {
+    let overrides = parseOutputTable(output);
+    overrides = overrides.map(function (override) {
+      override[1] = selectedMagento2ProjectDir + '/' + override[1];
+      return override;
+    });
+    win.webContents.send('overridesParsed', {
+      contents: overrides
+    })
+  }
 
-  const output = fs.readFileSync(outputFile).toString();
-  console.log(output);
+  let vendorCheck = fs.readFileSync(vendorCheckPatchFile).toString();
+  if (vendorCheck) {
+    //vendorCheckDiffs = parseVendorCheck(vendorCheck);
+  }
 }
 
 function createMenu() {
