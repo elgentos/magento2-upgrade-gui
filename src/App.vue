@@ -1,9 +1,9 @@
 <template>
   <div class="h-full w-full flex flex-col">
-    <Licensing 
+    <Licensing
       v-if="! hasValidLicense"
     />
-    <HelloWorld msg="Welcome to Your Electron App"/>
+    <HelloWorld msg="Magento Upgrade GUI"/>
   </div>
 </template>
 

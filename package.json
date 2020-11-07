@@ -1,5 +1,5 @@
 {
-  "name": "your-app-name",
+  "name": "magento-upgrade-gui",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -1,10 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, Menu, protocol, BrowserWindow, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
+import {readFileSync} from "atomically";
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
 // import * as Sentry from '@sentry/electron';
@@ -57,7 +58,72 @@ function createWindow() {
   })
 }
 
+function openFileDialog() {
+  const fs = require('fs');
+  const selectedMagento2ProjectDir = dialog.showOpenDialogSync({
+    title: 'Select Magento 2 project directory',
+    // filters: [{
+    //   name: 'Patch Files',
+    //   extensions: ['patch']
+    // }],
+    properties: [
+        'openDirectory'
+    ]
+  })
 
+  if (typeof selectedMagento2ProjectDir === 'undefined') {
+    return;
+  }
+
+  let vendorPatchFile = selectedMagento2ProjectDir + '/vendor.patch';
+  if (!fs.existsSync(vendorPatchFile)) {
+    dialog.showErrorBox('File not found', 'No vendor.patch diff file found in your Magento 2 project directory!');
+  }
+
+  let vendorCheckPatchFile = selectedMagento2ProjectDir + '/vendor_files_to_check.patch';
+  if (!fs.existsSync(vendorCheckPatchFile)) {
+    dialog.showErrorBox('File not found', 'No vendor_files_to_check.patch diff file found in your Magento 2 project directory!');
+  }
+
+  let outputFile = selectedMagento2ProjectDir + '/output.txt';
+  if (!fs.existsSync(outputFile)) {
+    dialog.showErrorBox('File not found', 'No output.txt overview file found in your Magento 2 project directory!');
+  }
+
+  let vendorDir = selectedMagento2ProjectDir + '/vendor';
+  if (!fs.existsSync(vendorDir)) {
+    dialog.showErrorBox('Directory not found', 'No vendor directory found in your Magento 2 project directory!');
+  }
+
+  // dialog.showMessageBoxSync({
+  //   type: 'info',
+  //   title: 'Files found!',
+  //   message: 'Great! All required files are found; output.txt, vendor.patch, vendor_files_to_check.patch and the vendor directory'
+  // })
+
+  const output = fs.readFileSync(outputFile).toString();
+  console.log(output);
+}
+
+function createMenu() {
+  const menuTemplate = [
+    { role: 'appMenu' },
+    {
+      label: '&File',
+      submenu: [
+        {
+          label: '&Open Magento 2 project directory',
+          accelerator: 'CommandOrControl+O',
+          click: openFileDialog
+        }
+      ]
+    }
+  ]
+
+  const menu = Menu.buildFromTemplate(menuTemplate);
+
+  Menu.setApplicationMenu(menu);
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -73,6 +139,7 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
     createWindow()
+    createMenu()
   }
 })
 
@@ -89,6 +156,7 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+  createMenu()
 })
 
 // Exit cleanly on request from parent process in development mode.
