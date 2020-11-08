@@ -26,10 +26,6 @@ ipcMain.on('openProjectDir', function () {
 
 let vendorCheckDiffs
 
-ipcMain.on('vendorFilePathChosen', function (data) {
-
-})
-
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -76,6 +72,25 @@ function parseOutputTable(output) {
   });
 }
 
+function parseVendorCheck(vendorCheck) {
+  let diffs = vendorCheck.split(/(?=diff -ur)/);
+  return diffs.reduce(function (accumulator, diff) {
+    let lines = diff.split("\n");
+    let [,,original,changed] = lines[0].split(' ');
+
+    // Find vendor/ file (as opposed to vendor_orig or similar)
+    let vendorFilename = false;
+    if (original.indexOf('vendor/') === 0) {
+      vendorFilename = original;
+    } else if (changed.indexOf('vendor/') === 0) {
+      vendorFilename = changed;
+    }
+
+    accumulator[vendorFilename] = diff;
+    return accumulator;
+  }, {})
+}
+
 function openFileDialog() {
   const fs = require('fs');
   const selectedMagento2ProjectDir = dialog.showOpenDialogSync({
@@ -109,13 +124,14 @@ function openFileDialog() {
     dialog.showErrorBox('Directory not found', 'No vendor directory found in your Magento 2 project directory!');
   }
 
+  const classMap = selectedMagento2ProjectDir + '/vendor/composer/autoload_classmap.php';
+  if (!fs.existsSync(vendorDir)) {
+    dialog.showErrorBox('Classmap not found', 'No autoloader classmap found in your Composer directory! Please run composer dumpautoload --classmap-authoritative in your Magento 2 project directory.');
+  }
+
   let output = fs.readFileSync(outputFile).toString();
   if (output) {
     let overrides = parseOutputTable(output);
-    overrides = overrides.map(function (override) {
-      override[1] = selectedMagento2ProjectDir + '/' + override[1];
-      return override;
-    });
     win.webContents.send('overridesParsed', {
       contents: overrides
     })
@@ -123,7 +139,10 @@ function openFileDialog() {
 
   let vendorCheck = fs.readFileSync(vendorCheckPatchFile).toString();
   if (vendorCheck) {
-    //vendorCheckDiffs = parseVendorCheck(vendorCheck);
+    vendorCheckDiffs = parseVendorCheck(vendorCheck);
+    win.webContents.send('vendorCheckDiffs', {
+      contents: vendorCheckDiffs
+    })
   }
 }
 
