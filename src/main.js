@@ -1,11 +1,4 @@
 import Vue from 'vue'
-import VueCodeHighlight from 'vue-code-highlight';
-import 'prism-es6/components/prism-markup-templating';
-import 'prism-es6/components/prism-php';
-import 'prism-es6/components/prism-markup';
-
-Vue.use(VueCodeHighlight)
-
 import App from './App.vue'
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.

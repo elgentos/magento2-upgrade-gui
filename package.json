@@ -28,9 +28,9 @@
     "core-js": "^3.6.5",
     "electron-store": "^6.0.0",
     "electron-updater": "^4.3.4",
+    "prismjs": "^1.22.0",
     "vue": "^2.6.11",
-    "vue-code-highlight": "^0.7.6",
-    "vue-highlightjs": "^1.3.3"
+    "vue-prism-editor": "^1.2.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

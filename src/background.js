@@ -124,10 +124,12 @@ function openFileDialog() {
     dialog.showErrorBox('Directory not found', 'No vendor directory found in your Magento 2 project directory!');
   }
 
-  const classMap = selectedMagento2ProjectDir + '/vendor/composer/autoload_classmap.php';
+  const classMap = selectedMagento2ProjectDir + '/classmap.json';
   if (!fs.existsSync(vendorDir)) {
-    dialog.showErrorBox('Classmap not found', 'No autoloader classmap found in your Composer directory! Please run composer dumpautoload --classmap-authoritative in your Magento 2 project directory.');
+    dialog.showErrorBox('Classmap JSON not found', 'No classmap.json found! Please generate it: php -r "\\$classmap = require_once(\'vendor/composer/autoload_classmap.php\'); echo json_encode(\\$classmap);" > classmap.json.');
   }
+
+  win.webContents.send('selectedMagento2ProjectDir', {dir: selectedMagento2ProjectDir});
 
   let output = fs.readFileSync(outputFile).toString();
   if (output) {
