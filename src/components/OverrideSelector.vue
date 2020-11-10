@@ -75,7 +75,7 @@
 }
 </style>
 <style>
-span.function.token {
+span.function.token.methodHighlight {
   background-color:yellow;
   border:3px solid red;
   padding:5px;
@@ -110,10 +110,11 @@ export default {
       vendorCheckDiffs: [],
       vendorFileContent: '',
       customFileContent: '',
-      vendorFileType: 'js',
-      customFileType: 'js',
+      vendorFileType: 'diff',
+      customFileType: 'diff',
       selectedMagento2ProjectDir: null,
       lineNumbers: true,
+      methodName: null
     }
   },
   mounted() {
@@ -126,6 +127,14 @@ export default {
     ipcRenderer.on('selectedMagento2ProjectDir', (event, args) => {
       this.selectedMagento2ProjectDir = args.dir;
     })
+  },
+  updated: function () {
+    if (this.type === 'Plugin' && this.methodName !== null) {
+      let highlightElement = [...document.querySelectorAll('span.function.token')].map(span => span.innerText === this.methodName ? span : false).filter(Boolean).shift();
+      if (highlightElement) {
+        highlightElement.classList.add('methodHighlight');
+      }
+    }
   },
   methods: {
     vendorFileContentHighlighter(code) {
@@ -164,25 +173,19 @@ export default {
         }
       }
 
+      this.methodName = methodName;
+
       customFilePath = this.fixPath(customFilePath);
 
-      let customFileType = customFilePath.split('.').pop();
+      this.customFileType = customFilePath.split('.').pop();
       if (this.customFileType === 'phtml') {
-        customFileType = 'html';
+        this.customFileType = 'php';
       }
-      this.customFileType = customFileType;
       if (fs.existsSync(customFilePath)) {
         this.customFileContent = fs.readFileSync(customFilePath).toString();
       } else {
         this.customFileContent = 'Could not find contents of ' + customFilePath;
       }
-
-      console.log(methodName);
-      // Highlight the method name for plugins
-      // Doesn't play nice with <pre> - need a lib for it
-      // if (type === 'Plugin' && methodName !== null) {
-      //   this.customFileContent = this.customFileContent.replace('ion ' + methodName, 'ion <span class="bg-yellow-500 text-black">' + methodName + '</span>');
-      // }
 
       this.vendorFileType = 'diff';
       if (vendorFilePath in this.vendorCheckDiffs) {
@@ -190,6 +193,12 @@ export default {
       } else {
         this.vendorFileContent = 'Could not find diff info for ' + vendorFilePath;
       }
+
+      // Highlight the method name for plugins
+      // Unfortunately we need a little setInterval because we can't hook into the after-render callback from Prism
+      // setInterval(function () {
+      //
+      // }, 100);
     },
     fixPath(path) {
       return path.replace('data/', '/home/peterjaap/development/workspace/')
