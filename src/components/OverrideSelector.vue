@@ -42,6 +42,7 @@
       </div>
       <div class="w-1/2 bg-indigo-300 px-4 py-2 overflow-y-scroll">
         <h2 class="mb-4 font-bold">{{ type }}</h2>
+        <h3 class="mb-4 font-bold">{{ copyPasteableFilePath }}</h3>
         <div >
           <prism-editor
               class="my-editor custom-file-content-editor height-300"
@@ -104,6 +105,7 @@ export default {
   data() {
     return {
       type: '',
+      copyPasteableFilePath: '',
       classMap: null,
       overrides: null,
       selectedOverride: null,
@@ -175,6 +177,7 @@ export default {
 
       this.methodName = methodName;
 
+      this.copyPasteableFilePath = customFilePath.replace('data/', '');
       customFilePath = this.fixPath(customFilePath);
 
       this.customFileType = customFilePath.split('.').pop();

@@ -114,9 +114,9 @@ function openFileDialog() {
     dialog.showErrorBox('File not found', 'No vendor_files_to_check.patch diff file found in your Magento 2 project directory!');
   }
 
-  const outputFile = selectedMagento2ProjectDir + '/output.txt';
+  const outputFile = selectedMagento2ProjectDir + '/patch-helper-output.txt';
   if (!fs.existsSync(outputFile)) {
-    dialog.showErrorBox('File not found', 'No output.txt overview file found in your Magento 2 project directory!');
+    dialog.showErrorBox('File not found', 'No patch-helper-output.txt overview file found in your Magento 2 project directory!');
   }
 
   const vendorDir = selectedMagento2ProjectDir + '/vendor';
