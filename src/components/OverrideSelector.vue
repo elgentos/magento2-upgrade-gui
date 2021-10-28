@@ -202,8 +202,7 @@ export default {
       // }, 100);
     },
     fixPath(path) {
-	let username = __dirname.split('/')[2];
-	return '/home/' + username + '/development/workspace/xs2event/magento2/' + path;
+	return this.selectedMagento2ProjectDir + path;
     }
   }
 }
