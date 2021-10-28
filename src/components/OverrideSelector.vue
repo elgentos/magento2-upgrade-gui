@@ -202,7 +202,7 @@ export default {
       // }, 100);
     },
     fixPath(path) {
-	return this.selectedMagento2ProjectDir + path;
+	return this.selectedMagento2ProjectDir + '/' + path;
     }
   }
 }
