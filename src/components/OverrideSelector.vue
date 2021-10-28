@@ -202,7 +202,10 @@ export default {
       // }, 100);
     },
     fixPath(path) {
-	return this.selectedMagento2ProjectDir + '/' + path;
+	if (path.indexOf('/data/') > -1) {
+            path = path.split('magento2')[1];
+	}
+	return this.selectedMagento2ProjectDir + path;
     }
   }
 }
