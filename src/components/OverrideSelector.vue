@@ -176,10 +176,8 @@ export default {
       }
 
       this.methodName = methodName;
-
       this.copyPasteableFilePath = customFilePath.replace('data/', '');
       customFilePath = this.fixPath(customFilePath);
-
       this.customFileType = customFilePath.split('.').pop();
       if (this.customFileType === 'phtml') {
         this.customFileType = 'php';
@@ -191,7 +189,7 @@ export default {
       }
 
       this.vendorFileType = 'diff';
-      if (vendorFilePath in this.vendorCheckDiffs) {
+      if (vendorFilePath in this.vendorCheckDiffs) {	
         this.vendorFileContent = this.vendorCheckDiffs[vendorFilePath];
       } else {
         this.vendorFileContent = 'Could not find diff info for ' + vendorFilePath;
@@ -204,7 +202,8 @@ export default {
       // }, 100);
     },
     fixPath(path) {
-      return path.replace('data/', '/home/peterjaap/development/workspace/')
+	let username = __dirname.split('/')[2];
+	return '/home/' + username + '/development/workspace/xs2event/magento2/' + path;
     }
   }
 }

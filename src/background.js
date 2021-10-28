@@ -73,10 +73,10 @@ function parseOutputTable(output) {
 }
 
 function parseVendorCheck(vendorCheck) {
-  let diffs = vendorCheck.split(/(?=diff -ur)/);
+  let diffs = vendorCheck.split(/(?=diff --color -ur)/);
   return diffs.reduce(function (accumulator, diff) {
     let lines = diff.split("\n");
-    let [,,original,changed] = lines[0].split(' ');
+    let [,,,original,changed] = lines[0].split(' ');
 
     // Find vendor/ file (as opposed to vendor_orig or similar)
     let vendorFilename = false;
