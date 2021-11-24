@@ -205,7 +205,7 @@ export default {
 	if (path.indexOf('/data/') > -1) {
             path = path.split('magento2')[1];
 	}
-	return this.selectedMagento2ProjectDir + path;
+	return this.selectedMagento2ProjectDir + '/' + path;
     }
   }
 }
