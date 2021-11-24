@@ -18,8 +18,7 @@
     </div>
 
     <span
-      class="relative z-0 inline-flex my-4 rounded-md shadow-sm"
-      v-if="selectedOverride"
+      class="relative z-0 inline-flex my-4 rounded-md shadow-sm hidden"
     >
       <button
         type="button"
@@ -73,7 +72,7 @@
       </div>
       <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-indigo-300">
         <h2 class="mb-4 font-bold">{{ type }}</h2>
-        <h3 class="mb-4 font-bold">{{ copyPasteableFilePath }}</h3>
+        <h3 class="mb-4 font-bold"><a :href="'http://localhost:8091?message=' + copyPasteableFilePath">{{ copyPasteableFilePath }}</a></h3>
         <div>
           <prism-editor
             class="my-editor custom-file-content-editor height-300"
