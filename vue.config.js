@@ -14,7 +14,7 @@ module.exports = {
                   target: ["AppImage"]
                 },
                 publish: ['github'],
-                appId: 'magento-upgrade-gui',
+                appId: 'magento2-upgrade-gui',
                 afterSign: './afterSignHook.js'
             }
         }

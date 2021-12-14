@@ -1,7 +1,8 @@
 {
-  "name": "magento-upgrade-gui",
-  "version": "0.1.0",
-  "private": true,
+  "name": "magento2-upgrade-gui",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

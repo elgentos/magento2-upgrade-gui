@@ -12,7 +12,7 @@ module.exports = async function (params) {
 
     console.log('afterSign hook triggered', params);
 
-    let appId = 'magento-upgrade-gui'
+    let appId = 'magento2-upgrade-gui'
 
     let appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
     if (!fs.existsSync(appPath)) {
