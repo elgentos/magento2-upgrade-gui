@@ -11,11 +11,7 @@ const Storage = require('electron-store');
 // so that it's automatically available in all
 // our components
 window.mainStorage = new Storage({
-    watch: true,
-    defaults: {
-        email: '',
-        licenseKey: ''
-    }
+    watch: true
 });
 
 Vue.config.productionTip = false
