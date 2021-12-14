@@ -4,7 +4,7 @@
       <select
         @change="loadOverride"
         id="override"
-        class="block w-full py-2 pl-3 mt-1 -ml-1 -mr-2 text-base leading-6 bg-indigo-200 border-gray-300 rounded-md form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+        class="block w-full py-2 pl-3 mt-1 -ml-1 -mr-2 text-base leading-6 bg-orange-200 border-gray-300 rounded-md form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
       >
         <option>Select a preference/plugin/override</option>
         <option
@@ -59,7 +59,7 @@
     </span>
 
     <div class="flex flex-row mt-2" v-if="selectedOverride">
-      <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-indigo-200">
+      <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-orange-200">
         <h2 class="mb-4 font-bold">Diff</h2>
         <div>
           <prism-editor
@@ -70,7 +70,7 @@
           ></prism-editor>
         </div>
       </div>
-      <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-indigo-300">
+      <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-orange-300">
         <h2 class="mb-4 font-bold">{{ type }}</h2>
         <h3 class="mb-4 font-bold"><a :href="'http://localhost:8091?message=' + copyPasteableFilePath">{{ copyPasteableFilePath }}</a></h3>
         <div>
