@@ -1,6 +1,18 @@
 # Magento 2 Upgrade GUI
 
+A GUI tool to help you visually and easily spot differences in a three-way comparison between the version you upgraded from, the version you upgraded to, and your Magento preferences, plugins and overrides.
+
 This is an Electron app to make it easier for you to read and process the output files of the [Ampersand Magento2 Upgrade Patch Helper](https://github.com/AmpersandHQ/ampersand-magento2-upgrade-patch-helper).
+
+On the left, it will show the differences between the files of your previous Magento version and the version you upgraded to.
+
+On the right, it will show the customization (override/preference/plugin) in your project and third party extensions. 
+
+This will allow you to quickly see differences and to assess whether this change is relevant for your customization.
+
+![App splash page](https://user-images.githubusercontent.com/431360/146059219-13fb222f-b92b-4a5b-97b5-91778c60769f.png)
+
+## Prerequisites
 
 To use this app, you will need the following files in your Magento 2 directory;
 - `vendor` (regular composer directory)
@@ -14,6 +26,13 @@ You will need to generate the `classmap.json` file yourself. This is needed beca
 ```bash
 php -r "\$classmap=require_once('vendor/composer/autoload_classmap.php'); echo json_encode(\$classmap);" > classmap.json
 ```
+
+## Screenshots
+
+![image](https://user-images.githubusercontent.com/431360/146057836-512a0714-52ca-42a5-8d60-00e0d5cf77f7.png)
+
+![image](https://user-images.githubusercontent.com/431360/146058024-123910fa-26b5-4f96-b0cb-b8f582a67594.png)
+
 
 ## Project setup
 
