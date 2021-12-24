@@ -125,7 +125,7 @@ function openFileDialog() {
   }
 
   const classMap = selectedMagento2ProjectDir + '/classmap.json';
-  if (!fs.existsSync(vendorDir)) {
+  if (!fs.existsSync(classMap)) {
     dialog.showErrorBox('Classmap JSON not found', 'No classmap.json found! Please generate it: php -r "\\$classmap = require_once(\'vendor/composer/autoload_classmap.php\'); echo json_encode(\\$classmap);" > classmap.json.');
   }
 
