@@ -73,7 +73,7 @@ function parseOutputTable(output) {
 }
 
 function parseVendorCheck(vendorCheck) {
-  let diffs = vendorCheck.split(/(?=diff --color -ur)/);
+  let diffs = vendorCheck.split(/(?=diff )/);
   return diffs.reduce(function (accumulator, diff) {
     let lines = diff.split("\n");
     let [,,,original,changed] = lines[0].split(' ');
