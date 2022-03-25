@@ -242,8 +242,8 @@ export default {
       // }, 100);
     },
     fixPath(path) {
-      if (path.indexOf("/data/") > -1) {
-        path = path.split("magento2/")[1];
+      if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {
+        return path;
       }
       return this.selectedMagento2ProjectDir + "/" + path;
     },
