@@ -28,6 +28,10 @@ composer dump --classmap-authoritative
 php -r "\$classmap=require_once('vendor/composer/autoload_classmap.php'); echo json_encode(\$classmap);" > classmap.json
 ```
 
+## Output
+
+When you open up a project directory, the GUI will create 2 result files in the Magento 2 root directory; `results.json` and `results.md`. The content is practically the same, the format is just different. The `results.json` file is used to track state so you can close the GUI and continue working on the project. The Markdown file resembles that state, but in a nice Markdown format you can paste it into your issue management system to keep your colleagues uptodate.
+
 ## Screenshots
 
 ![image](https://user-images.githubusercontent.com/431360/146057836-512a0714-52ca-42a5-8d60-00e0d5cf77f7.png)
@@ -35,9 +39,11 @@ php -r "\$classmap=require_once('vendor/composer/autoload_classmap.php'); echo j
 ![image](https://user-images.githubusercontent.com/431360/146058024-123910fa-26b5-4f96-b0cb-b8f582a67594.png)
 
 
-## Project setup
+## Installation
 
-We don't have a built binary yet since this is definitely a work in progress.
+Download the `AppImage` file from the [releases](https://github.com/elgentos/magento2-upgrade-gui/releases) page. Make it executable (with `chmod +x`) and run it!
+
+## Development
 
 Clone this repo and run this command to install all necessary dependencies:
 
@@ -45,9 +51,7 @@ Clone this repo and run this command to install all necessary dependencies:
 yarn install
 ```
 
-## Start
-
-To start (developing) the app, you can run:
+To start developing the app, you can run:
 
 ```
 yarn electron:serve
