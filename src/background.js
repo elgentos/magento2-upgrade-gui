@@ -2,10 +2,11 @@
 
 import { app, Menu, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+// import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
-import fs from "fs";
+import {Gitlab} from "@gitbeaker/node";
+// import fs from "fs";
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
 // import * as Sentry from '@sentry/electron';
@@ -16,6 +17,23 @@ import fs from "fs";
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+let vendorCheckDiffs;
+
+// Set up Gitlab API
+let gitlabApi = false;
+let gitlabToken = process.env.GITLAB_TOKEN || false;
+let gitlabHost = process.env.GITLAB_HOST || 'https://gitlab.com';
+let gitlabProjectId = process.env.GITLAB_PROJECT_ID || false;
+let gitlabIssueId = process.env.GITLAB_ISSUE_ID || false;
+
+if (gitlabToken && gitlabIssueId && gitlabProjectId) {
+  gitlabApi = new Gitlab({
+    host: gitlabHost,
+    token: gitlabToken,
+    rejectUnauthorized: (process.env.GITLAB_HOST === 'https://gitlab.com') // needed for self-hosted Gitlab instances
+  });
+}
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -25,7 +43,29 @@ ipcMain.on('openProjectDir', function () {
   openFileDialog()
 })
 
-let vendorCheckDiffs
+if (gitlabApi) {
+  ipcMain.on('update-gitlab-issue', function (event, args) {
+    gitlabApi.IssueNotes.all(gitlabProjectId, gitlabIssueId).then((notes) => {
+      let note = notes.filter(function (note) {
+        if (typeof note === "undefined") {
+          return false
+        }
+        if (typeof note.body === "undefined") {
+          return false
+        }
+        return note.body.includes('Status') && note.body.includes('Type') && note.body.includes('Vendor file') && note.body.includes('Project file');
+      });
+
+      if (note.length > 0) {
+        let noteId = note.shift().id;
+        gitlabApi.IssueNotes.edit(gitlabProjectId, gitlabIssueId, noteId, args.table);
+      } else {
+        gitlabApi.IssueNotes.create(gitlabProjectId, gitlabIssueId, args.table);
+      }
+    });
+  })
+}
+
 
 function createWindow() {
   // Create the browser window.
@@ -202,6 +242,43 @@ function createMenu() {
           click: openFileDialog
         }
       ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Reload',
+          accelerator: 'CmdOrCtrl+R',
+          click (item, focusedWindow) {
+            if (focusedWindow) focusedWindow.reload()
+          }
+        },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+          click (item, focusedWindow) {
+            if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+          }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          role: 'resetzoom'
+        },
+        {
+          role: 'zoomin'
+        },
+        {
+          role: 'zoomout'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          role: 'togglefullscreen'
+        }
+      ]
     }
   ]
 
@@ -232,14 +309,14 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    try {
-      await installExtension(VUEJS_DEVTOOLS)
-    } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
-    }
-  }
+  // if (isDevelopment && !process.env.IS_TEST) {
+  //   // Install Vue Devtools
+  //   try {
+  //     await installExtension(VUEJS_DEVTOOLS)
+  //   } catch (e) {
+  //     console.error('Vue Devtools failed to install:', e.toString())
+  //   }
+  // }
   createWindow()
   createMenu()
 })

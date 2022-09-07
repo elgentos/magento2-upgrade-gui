@@ -71,7 +71,7 @@
       </div>
       <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-orange-300">
         <h2 class="mb-4 font-bold">{{ type }}</h2>
-        <h3 class="mb-4 font-bold"><a :href="'http://localhost:8091?message=' + copyPasteableFilePath">{{ copyPasteableFilePath }}</a></h3>
+        <h3 class="mb-4 font-bold"><a :href="'http://localhost:8091?message=' + relativePath">{{ relativePath }}</a></h3>
         <div>
           <prism-editor
             class="my-editor custom-file-content-editor height-300"
@@ -136,7 +136,7 @@ export default {
     return {
       componentKey: 0,
       type: "",
-      copyPasteableFilePath: "",
+      relativePath: "",
       classMap: null,
       overrides: null,
       selectedOverride: null,
@@ -200,8 +200,7 @@ export default {
       }
 
       let methodName = null;
-      let [status, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
-      console.log(status);
+      let [, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
@@ -226,7 +225,7 @@ export default {
       }
 
       this.methodName = methodName;
-      this.copyPasteableFilePath = this.getRelativePath(customFilePath);
+      this.relativePath = this.getRelativePath(customFilePath);
       customFilePath = this.getAbsolutePath(customFilePath);
       this.customFileType = customFilePath.split(".").pop();
       if (this.customFileType === "phtml") {
@@ -245,18 +244,6 @@ export default {
         this.vendorFileContent =
           "Could not find diff info for " + vendorFilePath;
       }
-
-      // Highlight the method name for plugins
-      // Unfortunately we need a little setInterval because we can't hook into the after-render callback from Prism
-      // setInterval(function () {
-      //
-      // }, 100);
-    },
-    getAbsolutePath(path) {
-      if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {
-        return path;
-      }
-      return this.selectedMagento2ProjectDir + "/" + path;
     },
     processActionBar(action) {
       if (action === 'next') {
@@ -271,18 +258,41 @@ export default {
 
       if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped') {
         this.overrides[this.selectedFile][0] = action;
-        fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.overrides));
-        let table = markdownTable([['Status', 'Type', 'Vendor file', 'Project file']].concat(this.overrides));
-        table = table.replaceAll('unresolved', ':grey_question:');
-        table = table.replaceAll('resolved', ':white_check_mark:');
-        table = table.replaceAll('skipped', ':arrow_heading_down:');
-        table = table.replaceAll('cannot-fix', ':x:');
-        fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
+        this.writeResultsJsonFile();
+        let table = this.generateMarkdownTable();
+        this.writeMarkdownTableToFile.call(this, table);
+        this.updateGitlabIssueNote(table);
         this.processActionBar('next');
       }
     },
+    generateMarkdownTable: function () {
+      let table = markdownTable([['Status', 'Type', 'Vendor file', 'Project file']].concat(this.overrides));
+      table = table.replaceAll('unresolved', ':grey_question:');
+      table = table.replaceAll('resolved', ':white_check_mark:');
+      table = table.replaceAll('skipped', ':arrow_heading_down:');
+      return table.replaceAll('cannot-fix', ':x:');
+    },
+    writeMarkdownTableToFile(table) {
+      fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
+    },
+    writeResultsJsonFile: function () {
+      fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.overrides));
+    },
+    getAbsolutePath(path) {
+      if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {
+        return path;
+      }
+      return this.selectedMagento2ProjectDir + "/" + this.relativePath;
+    },
     getRelativePath(path) {
+      if (path.indexOf('/data/') > -1) {
+        // support for https://github.com/JeroenBoersma/docker-compose-development/
+        path = path.replace(/\/data\/(.*)\/magento2\//i, '', path);
+      }
       return path.replace(this.selectedMagento2ProjectDir + "/", "");
+    },
+    updateGitlabIssueNote(table) {
+      ipcRenderer.send('update-gitlab-issue', {table: table})
     }
   }
 };

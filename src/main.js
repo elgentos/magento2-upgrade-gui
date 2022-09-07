@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 
+const dotenv = require("dotenv")
+
+dotenv.config()
+
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
 // import * as Sentry from '@sentry/electron';
 // Sentry.init({ dsn: 'your-dsn-url' });
