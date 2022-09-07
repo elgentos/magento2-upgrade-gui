@@ -57,6 +57,8 @@ GITLAB_ISSUE_ID=123
 
 ![image](https://user-images.githubusercontent.com/431360/188888302-46c79be9-d499-4dcf-b71a-7359d09bdcf3.png)
 
+Note: for now, this only works when building the tool yourself, see [Development](#development). If somebody has a great idea on how to feed environment variables into the built AppImage, I'd love to hear it!
+
 ## Development
 
 Clone this repo and run this command to install all necessary dependencies:
