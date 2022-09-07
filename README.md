@@ -34,14 +34,28 @@ When you open up a project directory, the GUI will create 2 result files in the 
 
 ## Screenshots
 
-![image](https://user-images.githubusercontent.com/431360/146057836-512a0714-52ca-42a5-8d60-00e0d5cf77f7.png)
+![image](https://user-images.githubusercontent.com/431360/188888785-e4add7f7-6331-489a-acb7-83620484b8a1.png)
 
-![image](https://user-images.githubusercontent.com/431360/146058024-123910fa-26b5-4f96-b0cb-b8f582a67594.png)
-
+![image](https://user-images.githubusercontent.com/431360/188888901-280173d2-b074-46d6-a77b-7c50114662ef.png)
 
 ## Installation
 
 Download the `AppImage` file from the [releases](https://github.com/elgentos/magento2-upgrade-gui/releases) page. Make it executable (with `chmod +x`) and run it!
+
+## GitLab integration
+
+By setting a few .env variables, you can auto-update an issue with your progress. The GUI will create a note on the issue with a Markdown table. It will then update that note when an item is changed.
+
+`.env`
+
+```
+GITLAB_HOST=https://gitlab.com
+GITLAB_TOKEN=abcdefghijklmnopqrstuvwxyz
+GITLAB_PROJECT_ID=123
+GITLAB_ISSUE_ID=123
+```
+
+![image](https://user-images.githubusercontent.com/431360/188888302-46c79be9-d499-4dcf-b71a-7359d09bdcf3.png)
 
 ## Development
 
