@@ -28,6 +28,7 @@
     "core-js": "^3.6.5",
     "electron-store": "^6.0.0",
     "electron-updater": "4.3.9",
+    "markdown-table": "^3.0.2",
     "prismjs": "^1.22.0",
     "vue": "^2.6.11",
     "vue-prism-editor": "^1.2.2"

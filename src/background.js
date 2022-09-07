@@ -5,6 +5,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
+import fs from "fs";
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
 // import * as Sentry from '@sentry/electron';
@@ -34,7 +35,8 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      devTools: true
     },
     show: false,
   });
@@ -58,9 +60,9 @@ function createWindow() {
         action: 'resolved'
       })
       event.preventDefault()
-    } else if (input.key.toLowerCase() === 's') { // Skip
+    } else if (input.key.toLowerCase() === 's') { // Skipped
       win.webContents.send('navigationBar', {
-        action: 'skip'
+        action: 'skipped'
       })
       event.preventDefault()
     } else if (input.key.toLowerCase() === 'n') { // Cannot fix
@@ -74,7 +76,6 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    //if (!process.env.IS_TEST) win.webContents.openDevTools({mode:'bottom'})
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -97,7 +98,9 @@ function parseOutputTable(output) {
     // See https://github.com/AmpersandHQ/ampersand-magento2-upgrade-patch-helper/blob/master/src/Ampersand/PatchHelper/Helper/PatchOverrideValidator.php#L7
     return line.indexOf('Preference') > 0 || line.indexOf('Plugin') > 0 || line.indexOf('Override') > 0;
   }).map(function (line) {
-    return line.split("|").map(function (item) { return item.trim(); }).splice(1);
+    let result = line.split("|").map(function (item) { return item.trim(); }).splice(1);
+    result.unshift('unresolved');
+    return result;
   });
 }
 
@@ -133,6 +136,8 @@ function openFileDialog() {
     return;
   }
 
+  const resultsFile = selectedMagento2ProjectDir + '/results.json';
+
   const vendorPatchFile = selectedMagento2ProjectDir + '/vendor.patch';
   if (!fs.existsSync(vendorPatchFile)) {
     dialog.showErrorBox('File not found', 'No vendor.patch diff file found in your Magento 2 project directory!');
@@ -160,12 +165,20 @@ function openFileDialog() {
 
   win.webContents.send('selectedMagento2ProjectDir', {dir: selectedMagento2ProjectDir});
 
-  let output = fs.readFileSync(outputFile).toString();
-  if (output) {
-    let overrides = parseOutputTable(output);
+  if (fs.existsSync(resultsFile)) {
+    let resultsFileContents = fs.readFileSync(resultsFile).toString();
     win.webContents.send('overridesParsed', {
-      contents: overrides
+      contents: JSON.parse(resultsFileContents)
     })
+  } else {
+    let output = fs.readFileSync(outputFile).toString();
+    if (output) {
+      let overrides = parseOutputTable(output);
+      win.webContents.send('overridesParsed', {
+        contents: overrides
+      })
+      fs.writeFileSync(resultsFile, JSON.stringify(overrides))
+    }
   }
 
   let vendorCheck = fs.readFileSync(vendorCheckPatchFile).toString();

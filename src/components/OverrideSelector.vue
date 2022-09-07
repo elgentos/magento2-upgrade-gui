@@ -12,7 +12,7 @@
           :key="index"
           :value="index"
         >
-          {{ override[0] }}: {{ override[1] }} {{ override[2] }}
+          {{ override[1] }}: {{ override[2] }} {{ override[3] }} ({{ override[0] }})
         </option>
       </select>
     </div>
@@ -29,23 +29,20 @@
       </button>
       <button
           @click="processActionBar('resolved')"
-          v-show="gitlabToken"
           type="button"
           class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Resolved (R)
       </button>
       <button
-          @click="processActionBar('skip')"
-          v-show="gitlabToken"
+          @click="processActionBar('skipped')"
           type="button"
           class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 rounded-r-md hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
-        Mark as Skip (S)
+        Mark as Skipped (S)
       </button>
       <button
           @click="processActionBar('cannot-fix')"
-          v-show="gitlabToken"
           type="button"
           class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 rounded-r-md hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
@@ -127,6 +124,7 @@ import "prismjs/components/prism-diff";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-php";
 import "prismjs/themes/prism-tomorrow.css"; // import syntax highlighting styles
+import {markdownTable} from 'markdown-table'
 
 const fs = require("fs");
 
@@ -136,7 +134,7 @@ export default {
   },
   data() {
     return {
-      gitlabToken: (process.env.GITLAB_TOKEN !== null),
+      componentKey: 0,
       type: "",
       copyPasteableFilePath: "",
       classMap: null,
@@ -202,7 +200,8 @@ export default {
       }
 
       let methodName = null;
-      let [type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
+      let [status, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
+      console.log(status);
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
@@ -268,6 +267,18 @@ export default {
         let element = document.querySelector('#override');
         element.selectedIndex -= 1;
         this.selectedFile = element.value;
+      }
+
+      if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped') {
+        this.overrides[this.selectedFile][0] = action;
+        fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.overrides));
+        let table = markdownTable([['Status', 'Type', 'Vendor file', 'Project file']].concat(this.overrides));
+        table = table.replaceAll('unresolved', ':grey_question:');
+        table = table.replaceAll('resolved', ':white_check_mark:');
+        table = table.replaceAll('skipped', ':arrow_heading_down:');
+        table = table.replaceAll('cannot-fix', ':x:');
+        fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
+        this.processActionBar('next');
       }
     }
   }
