@@ -42,6 +42,35 @@ function createWindow() {
   win.maximize();
   win.show();
 
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.key.toLowerCase() === 'arrowright') { // Next
+      win.webContents.send('navigationBar', {
+        action: 'next'
+      })
+      event.preventDefault()
+    } else if (input.key.toLowerCase() === 'arrowleft') { // Previous
+      win.webContents.send('navigationBar', {
+        action: 'previous'
+      })
+      event.preventDefault()
+    } else if (input.key.toLowerCase() === 'r') { // Resolved
+      win.webContents.send('navigationBar', {
+        action: 'resolved'
+      })
+      event.preventDefault()
+    } else if (input.key.toLowerCase() === 's') { // Skip
+      win.webContents.send('navigationBar', {
+        action: 'skip'
+      })
+      event.preventDefault()
+    } else if (input.key.toLowerCase() === 'n') { // Cannot fix
+      win.webContents.send('navigationBar', {
+        action: 'cannot-fix'
+      })
+      event.preventDefault()
+    }
+  })
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)

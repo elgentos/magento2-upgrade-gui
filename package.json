@@ -23,6 +23,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@gitbeaker/node": "^35.7.0",
     "@sentry/electron": "^2.0.0",
     "core-js": "^3.6.5",
     "electron-store": "^6.0.0",

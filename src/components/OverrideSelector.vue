@@ -2,7 +2,7 @@
   <div v-if="overrides">
     <div>
       <select
-        @change="loadOverride"
+        @change="setSelectedFile"
         id="override"
         class="block w-full py-2 pl-3 mt-1 -ml-1 -mr-2 text-base leading-6 bg-orange-200 border-gray-300 rounded-md form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
       >
@@ -18,41 +18,43 @@
     </div>
 
     <span
-      class="relative z-0 inline-flex my-4 rounded-md shadow-sm hidden"
+      class="relative z-0 inline-flex my-4 rounded-md shadow-sm"
     >
       <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 ml-2 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-400 border border-gray-300 rounded-l-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          @click="processActionBar('previous')"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 ml-2 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-400 border border-gray-300 rounded-l-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Previous (←)
       </button>
       <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          @click="processActionBar('resolved')"
+          v-show="gitlabToken"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
-        Mark as Fixed (F)
+        Mark as Resolved (R)
       </button>
       <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-200 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          @click="processActionBar('skip')"
+          v-show="gitlabToken"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 rounded-r-md hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
-        Mark as False Positive (P)
+        Mark as Skip (S)
       </button>
       <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 rounded-r-md hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
-      >
-        Mark as Fix later (L)
-      </button>
-      <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 rounded-r-md hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          @click="processActionBar('cannot-fix')"
+          v-show="gitlabToken"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 rounded-r-md hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Cannot fix (N)
       </button>
       <button
-        type="button"
-        class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-200 border border-gray-300 rounded-r-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          @click="processActionBar('next')"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-200 border border-gray-300 rounded-r-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Next (→)
       </button>
@@ -134,6 +136,7 @@ export default {
   },
   data() {
     return {
+      gitlabToken: (process.env.GITLAB_TOKEN !== null),
       type: "",
       copyPasteableFilePath: "",
       classMap: null,
@@ -147,6 +150,7 @@ export default {
       selectedMagento2ProjectDir: null,
       lineNumbers: true,
       methodName: null,
+      selectedFile: null
     };
   },
   mounted() {
@@ -158,6 +162,9 @@ export default {
     });
     ipcRenderer.on("selectedMagento2ProjectDir", (event, args) => {
       this.selectedMagento2ProjectDir = args.dir;
+    });
+    ipcRenderer.on("navigationBar", (event, args) => {
+      this.processActionBar(args.action);
     });
   },
   updated: function() {
@@ -173,6 +180,11 @@ export default {
       }
     }
   },
+  watch: {
+    selectedFile: function() {
+      this.loadOverride()
+    }
+  },
   methods: {
     vendorFileContentHighlighter(code) {
       return highlight(code, languages[this.vendorFileType]);
@@ -180,17 +192,17 @@ export default {
     customFileContentHighlighter(code) {
       return highlight(code, languages[this.customFileType]);
     },
-    loadOverride: function(event) {
-      if (event.target.value in this.overrides) {
-        // how to negate "in" operator??
-      } else {
+    setSelectedFile: function (event) {
+      this.selectedFile = event.target.value;
+    },
+    loadOverride: function() {
+      if (!(this.selectedFile in this.overrides)) {
         this.selectedOverride = null;
         return;
       }
+
       let methodName = null;
-      let [type, vendorFilePath, customFilePath] = this.overrides[
-        event.target.value
-      ];
+      let [type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
@@ -247,6 +259,17 @@ export default {
       }
       return this.selectedMagento2ProjectDir + "/" + path;
     },
-  },
+    processActionBar(action) {
+      if (action === 'next') {
+        let element = document.querySelector('#override');
+        element.selectedIndex += 1;
+        this.selectedFile = element.value;
+      } else if (action === 'previous') {
+        let element = document.querySelector('#override');
+        element.selectedIndex -= 1;
+        this.selectedFile = element.value;
+      }
+    }
+  }
 };
 </script>
