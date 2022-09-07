@@ -226,8 +226,8 @@ export default {
       }
 
       this.methodName = methodName;
-      this.copyPasteableFilePath = customFilePath.replace("data/", "");
-      customFilePath = this.fixPath(customFilePath);
+      this.copyPasteableFilePath = this.getRelativePath(customFilePath);
+      customFilePath = this.getAbsolutePath(customFilePath);
       this.customFileType = customFilePath.split(".").pop();
       if (this.customFileType === "phtml") {
         this.customFileType = "php";
@@ -252,9 +252,9 @@ export default {
       //
       // }, 100);
     },
-    fixPath(path) {
-      if (path.indexOf("/data/") > -1) {
-        path = path.split("magento2/")[1];
+    getAbsolutePath(path) {
+      if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {
+        return path;
       }
       return this.selectedMagento2ProjectDir + "/" + path;
     },
@@ -280,6 +280,9 @@ export default {
         fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
         this.processActionBar('next');
       }
+    },
+    getRelativePath(path) {
+      return path.replace(this.selectedMagento2ProjectDir + "/", "");
     }
   }
 };
