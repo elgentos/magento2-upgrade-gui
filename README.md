@@ -61,7 +61,7 @@ Note: for now, this only works when building the tool yourself, see [Development
 
 ## PhpStorm integration
 
-You can click on the file path on the right hand side to have it open the file in PhpStorm (make sure you have the project open first). To disable JetBrains warning `'file' API is requested. Do you trust unknown host?`, you can go to `File > Settings > Build, Execution, Deployment > Debugger` and Check the `Allow unsigned requests` in the Built-in Server section.
+You can click on the file path on the right hand side (or on the "Original vendor file" and "New vendor file" links on the left hand side) to have it open the file in PhpStorm (make sure you have the project open first). To disable JetBrains warning `'file' API is requested. Do you trust unknown host?`, you can go to `File > Settings > Build, Execution, Deployment > Debugger` and Check the `Allow unsigned requests` in the Built-in Server section.
 
 ## Development
 
