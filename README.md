@@ -59,6 +59,10 @@ GITLAB_ISSUE_ID=123
 
 Note: for now, this only works when building the tool yourself, see [Development](#development). If somebody has a great idea on how to feed environment variables into the built AppImage, I'd love to hear it!
 
+## PhpStorm integration
+
+You can click on the file path on the right hand side to have it open the file in PhpStorm (make sure you have the project open first). To disable JetBrains warning `'file' API is requested. Do you trust unknown host?`, you can go to `File > Settings > Build, Execution, Deployment > Debugger` and Check the `Allow unsigned requests` in the Built-in Server section.
+
 ## Development
 
 Clone this repo and run this command to install all necessary dependencies:
