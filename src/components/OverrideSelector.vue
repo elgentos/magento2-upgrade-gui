@@ -60,6 +60,7 @@
     <div class="flex flex-row mt-2" v-if="selectedOverride">
       <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-orange-200">
         <h2 class="mb-4 font-bold">Diff</h2>
+        <h3 class="mb-4 font-bold"><a :href="'http://localhost:63342/api/file?file=' + relativePathVendorFileOrig" target="_blank">Original vendor file</a> | <a :href="'http://localhost:63342/api/file?file=' + relativePathVendorFile" target="_blank">New vendor file</a></h3>
         <div>
           <prism-editor
             class="my-editor vendor-file-content-editor height-300"
@@ -71,7 +72,7 @@
       </div>
       <div class="w-1/2 px-4 py-2 overflow-y-scroll bg-orange-300">
         <h2 class="mb-4 font-bold">{{ type }}</h2>
-        <h3 class="mb-4 font-bold"><a :href="'http://localhost:8091?message=' + relativePath">{{ relativePath }}</a></h3>
+        <h3 class="mb-4 font-bold"><a :href="'http://localhost:63342/api/file?file=' + relativePath" target="_blank">{{ relativePath }}</a></h3>
         <div>
           <prism-editor
             class="my-editor custom-file-content-editor height-300"
@@ -137,6 +138,8 @@ export default {
       componentKey: 0,
       type: "",
       relativePath: "",
+      relativePathVendorFile: "",
+      relativePathVendorFileOrig: "",
       classMap: null,
       overrides: null,
       selectedOverride: null,
@@ -226,6 +229,8 @@ export default {
 
       this.methodName = methodName;
       this.relativePath = this.getRelativePath(customFilePath);
+      this.relativePathVendorFile = this.getRelativePath(vendorFilePath);
+      this.relativePathVendorFileOrig = this.relativePathVendorFile.replace('vendor', 'vendor_orig');
       customFilePath = this.getAbsolutePath(customFilePath);
       this.customFileType = customFilePath.split(".").pop();
       if (this.customFileType === "phtml") {
