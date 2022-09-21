@@ -6,6 +6,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
 import {Gitlab} from "@gitbeaker/node";
+const { exec } = require('child_process');
 // import fs from "fs";
 
 // If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
@@ -26,6 +27,8 @@ let gitlabHost = process.env.GITLAB_HOST || 'https://gitlab.com';
 let gitlabProjectId = process.env.GITLAB_PROJECT_ID || false;
 let gitlabIssueId = process.env.GITLAB_ISSUE_ID || false;
 
+let selectedMagento2ProjectDir;
+
 if (gitlabToken && gitlabIssueId && gitlabProjectId) {
   gitlabApi = new Gitlab({
     host: gitlabHost,
@@ -41,6 +44,10 @@ protocol.registerSchemesAsPrivileged([
 
 ipcMain.on('openProjectDir', function () {
   openFileDialog()
+})
+
+ipcMain.on('run-git-commands', function (event, args) {
+  exec('git add ' + args.file + ' && git commit -m "Upgrade: resolved ' + args.file + '"', { cwd: selectedMagento2ProjectDir.toString()});
 })
 
 if (gitlabApi) {
@@ -165,7 +172,7 @@ function parseVendorCheck(vendorCheck) {
 
 function openFileDialog() {
   const fs = require('fs');
-  const selectedMagento2ProjectDir = dialog.showOpenDialogSync({
+  selectedMagento2ProjectDir = dialog.showOpenDialogSync({
     title: 'Select Magento 2 project directory',
     properties: [
         'openDirectory'

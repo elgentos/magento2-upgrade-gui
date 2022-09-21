@@ -251,15 +251,16 @@ export default {
       }
     },
     processActionBar(action) {
+      let element = document.querySelector('#override');
       if (action === 'next') {
-        let element = document.querySelector('#override');
         element.selectedIndex += 1;
         this.selectedFile = element.value;
       } else if (action === 'previous') {
-        let element = document.querySelector('#override');
         element.selectedIndex -= 1;
         this.selectedFile = element.value;
       }
+
+      let [,,, customFilePath] = this.overrides[this.selectedFile];
 
       if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped') {
         this.overrides[this.selectedFile][0] = action;
@@ -267,6 +268,7 @@ export default {
         let table = this.generateMarkdownTable();
         this.writeMarkdownTableToFile.call(this, table);
         this.updateGitlabIssueNote(table);
+        this.runGitCommands(customFilePath);
         this.processActionBar('next');
       }
     },
@@ -298,6 +300,9 @@ export default {
     },
     updateGitlabIssueNote(table) {
       ipcRenderer.send('update-gitlab-issue', {table: table})
+    },
+    runGitCommands(file) {
+      ipcRenderer.send('run-git-commands', {file: file});
     }
   }
 };
