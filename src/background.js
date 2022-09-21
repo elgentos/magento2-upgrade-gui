@@ -14,24 +14,26 @@ const Store = require('electron-store');
 const store = new Store(
     {
       defaults: {
-        'gitlab_token': false,
-        'gitlab_host': 'https://gitlab.com',
-        'gitlab_project_id': false,
-        'gitlab_issue_id': false,
-        'git_auto_commit': true,
-        'git_auto_commit_message': 'Upgrade: resolved %s'
+        'gitlab': {
+          'token': false,
+          'host': 'https://gitlab.com',
+          'project_id': false,
+          'issue_id': false,
+        },
+        'git': {
+          'auto_commit': true,
+          'auto_commit_message': 'Upgrade: resolved %s'
+        }
       }
     }
 );
 
-console.log(app.getPath('userData'), store.get('gitlab_issue_id'));
-
 let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 
-if (store.get('gitlab_token') && store.get('gitlab_project_id') && store.get('gitlab_issue_id')) {
+if (store.get('gitlab.token') && store.get('gitlab.project_id') && store.get('gitlab.issue_id')) {
   gitlabApi = new Gitlab({
-    host: store.get('gitlab_host'),
-    token: store.get('gitlab_token'),
+    host: store.get('gitlab.host'),
+    token: store.get('gitlab.token'),
     rejectUnauthorized: (process.env.GITLAB_HOST === 'https://gitlab.com') // needed for self-hosted Gitlab instances
   });
 }
@@ -46,14 +48,14 @@ ipcMain.on('openProjectDir', function () {
 })
 
 ipcMain.on('run-git-commands', function (event, args) {
-  if (store.get('git_auto_commit')) {
-    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git_auto_commit_message'), ...args) + '"', {cwd: selectedMagento2ProjectDir.toString()});
+  if (store.get('git.auto_commit')) {
+    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), ...args) + '"', {cwd: selectedMagento2ProjectDir.toString()});
   }
 })
 
 if (gitlabApi) {
   ipcMain.on('update-gitlab-issue', function (event, args) {
-    gitlabApi.IssueNotes.all(store.get('gitlab_project_id'), store.get('gitlab_issue_id')).then((notes) => {
+    gitlabApi.IssueNotes.all(store.get('gitlab.project_id'), store.get('gitlab.issue_id')).then((notes) => {
       let note = notes.filter(function (note) {
         if (typeof note === "undefined") {
           return false
@@ -66,9 +68,9 @@ if (gitlabApi) {
 
       if (note.length > 0) {
         let noteId = note.shift().id;
-        gitlabApi.IssueNotes.edit(store.get('gitlab_project_id'), store.get('gitlab_issue_id'), noteId, args.table);
+        gitlabApi.IssueNotes.edit(store.get('gitlab.project_id'), store.get('gitlab.issue_id'), noteId, args.table);
       } else {
-        gitlabApi.IssueNotes.create(store.get('gitlab_project_id'), store.get('gitlab_issue_id'), args.table);
+        gitlabApi.IssueNotes.create(store.get('gitlab.project_id'), store.get('gitlab.issue_id'), args.table);
       }
     });
   })
