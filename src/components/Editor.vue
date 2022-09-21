@@ -55,7 +55,6 @@
       >
         Next (→)
       </button>
-      <input class="relative inline-flex px-4 font-medium text-sm" type="checkbox" name="git-auto-commit" id="git-auto-commit" checked="checked" /> Enable Git auto-committing
     </span>
 
     <div class="flex flex-row mt-2" v-if="selectedOverride">
