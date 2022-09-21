@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="relative bg-white overflow-hidden" v-if="showInstructions">
+    <div class="relative bg-white overflow-hidden" v-if="activeScreen === 'home'">
       <div class="max-w-screen-xl mx-auto">
         <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
           <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -39,7 +39,7 @@
         <img class="border-b-8 border-orange-400 h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://d27i7n2isjbnbi.cloudfront.net/careers/photos/180422/normal_photo_1597776635.jpg" alt="">
       </div>
     </div>
-    <div class="relative bg-white overflow-hidden" v-if="showSettings">
+    <div class="relative bg-white overflow-hidden" v-if="activeScreen === 'settings'">
       <div class="max-w-screen-xl mx-auto">
         <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
           <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -86,18 +86,17 @@ export default {
   },
   data() {
     return {
-      showInstructions: true,
-      showSettings: false,
+      activeScreen: 'home',
       settings: []
     }
   },
   mounted() {
     ipcRenderer.on('overridesParsed', (event, args) => {
       if (args.contents) {
-        this.showInstructions = false;
+        this.activeScreen = 'editor';
       }
     });
-    ipcRenderer.on("settings", (event, args) => {
+    ipcRenderer.on('settings', (event, args) => {
       this.settings = args.settings;
     });
   },
@@ -107,12 +106,10 @@ export default {
     },
     openSettings: function () {
       ipcRenderer.send('openSettings');
-      this.showInstructions = false;
-      this.showSettings = true;
+      this.activeScreen = 'settings';
     },
     closeSettings: function () {
-      this.showInstructions = true;
-      this.showSettings = false;
+      this.activeScreen = 'home';
     },
     updateSettings: function () {
       ipcRenderer.send('updateSettings', this.settings);
