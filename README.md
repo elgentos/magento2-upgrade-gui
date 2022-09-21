@@ -10,9 +10,9 @@ On the right, it will show the customization (override/preference/plugin) in you
 
 This will allow you to quickly see differences and to assess whether this change is relevant for your customization.
 
-![App splash page](https://user-images.githubusercontent.com/431360/146059219-13fb222f-b92b-4a5b-97b5-91778c60769f.png)
+![App home](https://user-images.githubusercontent.com/431360/191521244-7bbb85e7-9ec6-492a-9570-8b458f8134ce.png)
 
-## Prerequisites
+## Instructions
 
 To use this app, you will need the following files in your Magento 2 directory;
 - `vendor` (regular composer directory)
@@ -34,31 +34,50 @@ When you open up a project directory, the GUI will create 2 result files in the 
 
 ## Screenshots
 
-![image](https://user-images.githubusercontent.com/431360/188888785-e4add7f7-6331-489a-acb7-83620484b8a1.png)
+![Editor](https://user-images.githubusercontent.com/431360/191521234-0a9c4473-5a71-47ef-bd2e-ccbe45513deb.png)
 
-![image](https://user-images.githubusercontent.com/431360/188888901-280173d2-b074-46d6-a77b-7c50114662ef.png)
+![Instructions page](https://user-images.githubusercontent.com/431360/191521238-37d47cf9-893e-428c-9a61-7730387929d0.png)
 
 ## Installation
 
 Download the `AppImage` file from the [releases](https://github.com/elgentos/magento2-upgrade-gui/releases) page. Make it executable (with `chmod +x`) and run it!
 
+## Git auto-commit
+
+If you have this feature enabled (default), it will add the file to the git stage and commit to your repository when you click "Resolve". Enabling/disabling this feature and the commit message can be changed in the Settings screen.
+
 ## GitLab integration
 
 By setting a few config settings, you can auto-update an issue with your progress. The GUI will create a note on the issue with a Markdown table. It will then update that note when an item is changed.
 
-The config file is stored in your home dir, but differs per OS. In Linux, it is `~/.config/magento2-upgrade-gui/config.json`.
+You can set these settings in the Settings screen.
+
+![Settings page](https://user-images.githubusercontent.com/431360/191521240-15d626eb-dfc0-496d-9728-57cd834d2b6d.png)
+
+The output in Gitlab will look like this:
+
+![image](https://user-images.githubusercontent.com/431360/188888302-46c79be9-d499-4dcf-b71a-7359d09bdcf3.png)
+
+## Config file
+
+The config file will be created when the app first starts.
 
 ```
 {
-    "gitlab_token": "abcdefghijklmnopqrstuvwxyz",
-    "gitlab_host": "https://gitlab.com",
-    "gitlab_project_id": 123,
-    "gitlab_issue_id": 123,
-    "git_auto_commit": true
+    "gitlab": {
+            "host": "https://gitlab.com",
+            "token": "xxxxxxxxxxxxxxxxx",
+            "project_id": "123",
+            "issue_id": "123"
+    },
+    "git": {
+            "auto_commit": true,
+            "auto_commit_message": "Upgrade: resolved %s"
+    }
 }
 ```
 
-![image](https://user-images.githubusercontent.com/431360/188888302-46c79be9-d499-4dcf-b71a-7359d09bdcf3.png)
+It is stored in your home dir, but the location differs per OS. On Linux, it is `~/.config/magento2-upgrade-gui/config.json`.
 
 ## PhpStorm integration
 
