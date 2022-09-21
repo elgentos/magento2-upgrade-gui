@@ -53,9 +53,14 @@
               <h2 class="text-4xl tracking-tight leading-10 font-extrabold text-gray-900 sm:text-5xl sm:leading-none md:text-6xl">
                 Settings
               </h2>
-              <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-
-              </p>
+              <div class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                <div>Gitlab host: <input type="text" name="gitlab_host" value="" class="border" /></div>
+                <div>Gitlab token: <input type="text" name="gitlab_token" value="" class="border" /></div>
+                <div>Gitlab project ID: <input type="text" name="gitlab_project_id" value="" class="border" /></div>
+                <div>Gitlab issue ID: <input type="text" name="gitlab_issue_id" value="" class="border" /></div>
+                <div>Enable Git auto commit: <input type="checkbox" name="git_auto_commit" checked="checked" /></div>
+                <div>Git auto commit message: <input type="checkbox" name="git_auto_commit" checked="checked" /></div>
+              </div>
               <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div class="rounded-md shadow">
                   <a href="#" v-on:click="closeSettings" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-500 focus:outline-none focus:border-orange-700 focus:shadow-outline-orange transition duration-150 ease-in-out md:py-4 md:text-lg md:px-10">
