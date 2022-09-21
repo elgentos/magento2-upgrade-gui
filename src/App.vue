@@ -2,22 +2,22 @@
   <div class="h-full w-full flex flex-col bg-white">
     <template>
       <div>
-        <Instructions />
-        <OverrideSelector />
+        <Home />
+        <Editor />
       </div>
     </template>
   </div>
 </template>
 
 <script>
-import Instructions from './components/Instructions.vue'
-import OverrideSelector from './components/OverrideSelector.vue'
+import Home from './components/Home.vue'
+import Editor from './components/Editor.vue'
 
 export default {
   name: 'App',
   components: {
-    Instructions,
-    OverrideSelector
+    Home,
+    Editor
   },
 }
 </script>
