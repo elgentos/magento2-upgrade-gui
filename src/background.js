@@ -148,7 +148,7 @@ function parseVendorCheck(vendorCheck) {
   let diffs = vendorCheck.split(/(?=diff )/);
   return diffs.reduce(function (accumulator, diff) {
     let lines = diff.split("\n");
-    let [,,,original,changed] = lines[0].split(' ');
+    let [changed, original] = lines[0].split(' ').reverse();
 
     // Find vendor/ file (as opposed to vendor_orig or similar)
     let vendorFilename = false;
