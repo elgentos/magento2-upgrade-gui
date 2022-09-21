@@ -6,6 +6,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
 import {Gitlab} from "@gitbeaker/node";
+const util = require('util');
 const { exec } = require('child_process');
 const Store = require('electron-store');
 
@@ -17,7 +18,8 @@ const store = new Store(
         'gitlab_host': 'https://gitlab.com',
         'gitlab_project_id': false,
         'gitlab_issue_id': false,
-        'git_auto_commit': true
+        'git_auto_commit': true,
+        'git_auto_commit_message': 'Upgrade: resolved %s'
       }
     }
 );
@@ -45,7 +47,7 @@ ipcMain.on('openProjectDir', function () {
 
 ipcMain.on('run-git-commands', function (event, args) {
   if (store.get('git_auto_commit')) {
-    exec('git add ' + args.file + ' && git commit -m "Upgrade: resolved ' + args.file + '"', {cwd: selectedMagento2ProjectDir.toString()});
+    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git_auto_commit_message'), ...args) + '"', {cwd: selectedMagento2ProjectDir.toString()});
   }
 })
 
