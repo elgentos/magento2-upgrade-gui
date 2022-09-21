@@ -44,20 +44,21 @@ Download the `AppImage` file from the [releases](https://github.com/elgentos/mag
 
 ## GitLab integration
 
-By setting a few .env variables, you can auto-update an issue with your progress. The GUI will create a note on the issue with a Markdown table. It will then update that note when an item is changed.
+By setting a few config settings, you can auto-update an issue with your progress. The GUI will create a note on the issue with a Markdown table. It will then update that note when an item is changed.
 
-`.env`
+The config file is stored in your home dir, but differs per OS. In Linux, it is `~/.config/magento2-upgrade-gui/config.json`.
 
 ```
-GITLAB_HOST=https://gitlab.com
-GITLAB_TOKEN=abcdefghijklmnopqrstuvwxyz
-GITLAB_PROJECT_ID=123
-GITLAB_ISSUE_ID=123
+{
+    "gitlab_token": "abcdefghijklmnopqrstuvwxyz",
+    "gitlab_host": "https://gitlab.com",
+    "gitlab_project_id": 123,
+    "gitlab_issue_id": 123,
+    "git_auto_commit": true
+}
 ```
 
 ![image](https://user-images.githubusercontent.com/431360/188888302-46c79be9-d499-4dcf-b71a-7359d09bdcf3.png)
-
-Note: for now, this only works when building the tool yourself, see [Development](#development). If somebody has a great idea on how to feed environment variables into the built AppImage, I'd love to hear it!
 
 ## PhpStorm integration
 

@@ -32,7 +32,7 @@
     "@gitbeaker/node": "^35.7.0",
     "@sentry/electron": "^2.0.0",
     "core-js": "^3.6.5",
-    "electron-store": "^6.0.0",
+    "electron-store": "^6.0.1",
     "electron-updater": "4.3.9",
     "markdown-table": "^3.0.2",
     "prismjs": "^1.22.0",

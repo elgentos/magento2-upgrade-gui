@@ -7,32 +7,29 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
 import {Gitlab} from "@gitbeaker/node";
 const { exec } = require('child_process');
-// import fs from "fs";
+const Store = require('electron-store');
 
-// If you want to use Sentry for your error reporting, add your Sentry DSN configuration here.
-// import * as Sentry from '@sentry/electron';
-// Sentry.init({ dsn: 'your-dsn-url' });
+// Set up store data
+const store = new Store(
+    {
+      defaults: {
+        'gitlab_token': false,
+        'gitlab_host': 'https://gitlab.com',
+        'gitlab_project_id': false,
+        'gitlab_issue_id': false,
+        'git_auto_commit': true
+      }
+    }
+);
 
+console.log(app.getPath('userData'), store.get('gitlab_issue_id'));
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
+let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 
-let vendorCheckDiffs;
-
-// Set up Gitlab API
-let gitlabApi = false;
-let gitlabToken = process.env.GITLAB_TOKEN || false;
-let gitlabHost = process.env.GITLAB_HOST || 'https://gitlab.com';
-let gitlabProjectId = process.env.GITLAB_PROJECT_ID || false;
-let gitlabIssueId = process.env.GITLAB_ISSUE_ID || false;
-
-let selectedMagento2ProjectDir;
-
-if (gitlabToken && gitlabIssueId && gitlabProjectId) {
+if (store.get('gitlab_token') && store.get('gitlab_project_id') && store.get('gitlab_issue_id')) {
   gitlabApi = new Gitlab({
-    host: gitlabHost,
-    token: gitlabToken,
+    host: store.get('gitlab_host'),
+    token: store.get('gitlab_token'),
     rejectUnauthorized: (process.env.GITLAB_HOST === 'https://gitlab.com') // needed for self-hosted Gitlab instances
   });
 }
@@ -47,12 +44,14 @@ ipcMain.on('openProjectDir', function () {
 })
 
 ipcMain.on('run-git-commands', function (event, args) {
-  exec('git add ' + args.file + ' && git commit -m "Upgrade: resolved ' + args.file + '"', { cwd: selectedMagento2ProjectDir.toString()});
+  if (store.get('git_auto_commit')) {
+    exec('git add ' + args.file + ' && git commit -m "Upgrade: resolved ' + args.file + '"', {cwd: selectedMagento2ProjectDir.toString()});
+  }
 })
 
 if (gitlabApi) {
   ipcMain.on('update-gitlab-issue', function (event, args) {
-    gitlabApi.IssueNotes.all(gitlabProjectId, gitlabIssueId).then((notes) => {
+    gitlabApi.IssueNotes.all(store.get('gitlab_project_id'), store.get('gitlab_issue_id')).then((notes) => {
       let note = notes.filter(function (note) {
         if (typeof note === "undefined") {
           return false
@@ -65,9 +64,9 @@ if (gitlabApi) {
 
       if (note.length > 0) {
         let noteId = note.shift().id;
-        gitlabApi.IssueNotes.edit(gitlabProjectId, gitlabIssueId, noteId, args.table);
+        gitlabApi.IssueNotes.edit(store.get('gitlab_project_id'), store.get('gitlab_issue_id'), noteId, args.table);
       } else {
-        gitlabApi.IssueNotes.create(gitlabProjectId, gitlabIssueId, args.table);
+        gitlabApi.IssueNotes.create(store.get('gitlab_project_id'), store.get('gitlab_issue_id'), args.table);
       }
     });
   })
