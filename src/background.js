@@ -47,6 +47,16 @@ ipcMain.on('openProjectDir', function () {
   openFileDialog()
 })
 
+ipcMain.on('openSettings', function () {
+  win.webContents.send('settings', {
+    settings: store.store
+  });
+})
+
+ipcMain.on('updateSettings', function (event, settings) {
+  store.store = settings;
+});
+
 ipcMain.on('run-git-commands', function (event, args) {
   if (store.get('git.auto_commit')) {
     exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), ...args) + '"', {cwd: selectedMagento2ProjectDir.toString()});

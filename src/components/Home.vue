@@ -54,12 +54,12 @@
                 Settings
               </h2>
               <div class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                <div>Gitlab host: <input type="text" name="gitlab_host" value="" class="border" /></div>
-                <div>Gitlab token: <input type="text" name="gitlab_token" value="" class="border" /></div>
-                <div>Gitlab project ID: <input type="text" name="gitlab_project_id" value="" class="border" /></div>
-                <div>Gitlab issue ID: <input type="text" name="gitlab_issue_id" value="" class="border" /></div>
-                <div>Enable Git auto commit: <input type="checkbox" name="git_auto_commit" checked="checked" /></div>
-                <div>Git auto commit message: <input type="checkbox" name="git_auto_commit" checked="checked" /></div>
+                <div>Gitlab host: <input type="text" name="gitlab_host" class="border" v-model="settings.gitlab.host" @change="updateSettings"  /></div>
+                <div>Gitlab token: <input type="text" name="gitlab_token" class="border" v-model="settings.gitlab.token" @change="updateSettings"  /></div>
+                <div>Gitlab project ID: <input type="text" name="gitlab_project_id" class="border" v-model="settings.gitlab.project_id" @change="updateSettings"  /></div>
+                <div>Gitlab issue ID: <input type="text" name="gitlab_issue_id" class="border" v-model="settings.gitlab.issue_id" @change="updateSettings"  /></div>
+                <div>Enable Git auto commit: <input type="checkbox" name="git_auto_commit" v-model="settings.git.auto_commit" @change="updateSettings"  /></div>
+                <div>Git auto commit message: <input type="text" name="git_auto_commit_message" class="border" v-model="settings.git.auto_commit_message" @change="updateSettings" /></div>
               </div>
               <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div class="rounded-md shadow">
@@ -88,6 +88,7 @@ export default {
     return {
       showInstructions: true,
       showSettings: false,
+      settings: []
     }
   },
   mounted() {
@@ -95,19 +96,26 @@ export default {
       if (args.contents) {
         this.showInstructions = false;
       }
-    })
+    });
+    ipcRenderer.on("settings", (event, args) => {
+      this.settings = args.settings;
+    });
   },
   methods: {
     openProjectDir: function () {
       ipcRenderer.send('openProjectDir');
     },
     openSettings: function () {
+      ipcRenderer.send('openSettings');
       this.showInstructions = false;
       this.showSettings = true;
     },
     closeSettings: function () {
       this.showInstructions = true;
       this.showSettings = false;
+    },
+    updateSettings: function () {
+      ipcRenderer.send('updateSettings', this.settings);
     }
   }
 }
