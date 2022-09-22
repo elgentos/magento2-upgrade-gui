@@ -37,16 +37,23 @@
       <button
           @click="processActionBar('skipped')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 rounded-r-md hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Skipped (S)
       </button>
       <button
           @click="processActionBar('cannot-fix')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 rounded-r-md hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Cannot fix (N)
+      </button>
+      <button
+          @click="processActionBar('unresolved')"
+          type="button"
+          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-white-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+      >
+        Mark as Unresolved (U)
       </button>
       <button
           @click="processActionBar('next')"
@@ -262,7 +269,7 @@ export default {
 
       let [,,, customFilePath] = this.overrides[this.selectedFile];
 
-      if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped') {
+      if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped' || action === 'unresolved') {
         this.overrides[this.selectedFile][0] = action;
         this.writeResultsJsonFile();
         let table = this.generateMarkdownTable();

@@ -59,7 +59,7 @@ ipcMain.on('updateSettings', function (event, settings) {
 
 ipcMain.on('run-git-commands', function (event, args) {
   if (store.get('git.auto_commit')) {
-    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), ...args) + '"', {cwd: selectedMagento2ProjectDir.toString()});
+    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), args.file) + '"', {cwd: selectedMagento2ProjectDir.toString()});
   }
 })
 
