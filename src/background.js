@@ -65,7 +65,7 @@ ipcMain.on('run-git-commands', function (event, args) {
 
 if (gitlabApi) {
   ipcMain.on('update-gitlab-issue', function (event, args) {
-    gitlabApi.IssueNotes.all(store.get('gitlab.project_id'), store.get('gitlab.issue_id')).then((notes) => {
+    gitlabApi.IssueNotes.all(parseInt(store.get('gitlab.project_id')), parseInt(store.get('gitlab.issue_id'))).then((notes) => {
       let note = notes.filter(function (note) {
         if (typeof note === "undefined") {
           return false
@@ -78,9 +78,9 @@ if (gitlabApi) {
 
       if (note.length > 0) {
         let noteId = note.shift().id;
-        gitlabApi.IssueNotes.edit(store.get('gitlab.project_id'), store.get('gitlab.issue_id'), noteId, args.table);
+        gitlabApi.IssueNotes.edit(parseInt(store.get('gitlab.project_id')), parseInt(store.get('gitlab.issue_id')), noteId, args.table);
       } else {
-        gitlabApi.IssueNotes.create(store.get('gitlab.project_id'), store.get('gitlab.issue_id'), args.table);
+        gitlabApi.IssueNotes.create(parseInt(store.get('gitlab.project_id')), parseInt(store.get('gitlab.issue_id')), args.table);
       }
     });
   })
