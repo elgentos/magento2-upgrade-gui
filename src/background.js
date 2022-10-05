@@ -47,6 +47,10 @@ ipcMain.on('openProjectDir', function () {
   openFileDialog()
 })
 
+ipcMain.on('openThreeWayDiff', function (event, args) {
+  exec('phpstorm diff ' + args.vendorOrigFile + ' ' + args.vendorFile + ' ' + args.overrideFile);
+})
+
 ipcMain.on('openSettings', function () {
   win.webContents.send('settings', {
     settings: store.store
