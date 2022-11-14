@@ -214,7 +214,7 @@ export default {
       }
 
       let methodName = null;
-      let [, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
+      let [,, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
