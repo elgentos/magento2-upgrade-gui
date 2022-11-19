@@ -30,7 +30,7 @@ php -r "\$classmap=require_once('vendor/composer/autoload_classmap.php'); echo j
 
 ## Output
 
-When you open up a project directory, the GUI will create 2 result files in the Magento 2 root directory; `results.json` and `results.md`. The content is practically the same, the format is just different. The `results.json` file is used to track state so you can close the GUI and continue working on the project. The Markdown file resembles that state, but in a nice Markdown format you can paste it into your issue management system to keep your colleagues uptodate.
+When you open up a project directory, the GUI will create 3 result files in the Magento 2 root directory; `warnings.json`, `infoNotices.json` and `results.md`. The `warnings.json` file is used to track state so you can close the GUI and continue working on the project. The Markdown file resembles that state, but in a nice Markdown format you can paste it into your issue management system to keep your colleagues uptodate.
 
 ## Screenshots
 
@@ -94,5 +94,5 @@ yarn install
 To start developing the app, you can run:
 
 ```
-yarn electron:serve
+NODE_ENV=development yarn electron:serve
 ```
