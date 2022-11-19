@@ -6,6 +6,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
 import {Gitlab} from "@gitbeaker/node";
+import fs from "fs";
 const util = require('util');
 const { exec } = require('child_process');
 const Store = require('electron-store');
@@ -63,7 +64,7 @@ ipcMain.on('updateSettings', function (event, settings) {
 
 ipcMain.on('run-git-commands', function (event, args) {
   if (store.get('git.auto_commit')) {
-    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), args.file) + '"', {cwd: selectedMagento2ProjectDir.toString()});
+    exec('git add ' + args.file + ' && git commit -m "' + util.format(store.get('git.auto_commit_message'), args.file) + '"', {cwd: selectedMagento2ProjectDir});
   }
 })
 
@@ -141,7 +142,7 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    //if (isDevelopment) win.webContents.openDevTools({mode:'bottom'})
+    if (isDevelopment) win.webContents.openDevTools({mode:'bottom'})
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -204,7 +205,10 @@ function openFileDialog() {
     return;
   }
 
-  const resultsFile = selectedMagento2ProjectDir + '/results.json';
+  selectedMagento2ProjectDir = selectedMagento2ProjectDir[0];
+
+  const warningsFile = selectedMagento2ProjectDir + '/warnings.json';
+  const infoNoticesFile = selectedMagento2ProjectDir + '/infoNotices.json';
 
   const vendorPatchFile = selectedMagento2ProjectDir + '/vendor.patch';
   if (!fs.existsSync(vendorPatchFile)) {
@@ -233,10 +237,12 @@ function openFileDialog() {
 
   win.webContents.send('selectedMagento2ProjectDir', {dir: selectedMagento2ProjectDir});
 
-  if (fs.existsSync(resultsFile)) {
-    let resultsFileContents = fs.readFileSync(resultsFile).toString();
+  if (fs.existsSync(warningsFile) && fs.existsSync(infoNoticesFile)) {
+    let warningsFileContents = fs.readFileSync(warningsFile).toString();
+    let infoNoticesFileContents = fs.readFileSync(infoNoticesFile).toString();
     win.webContents.send('outputTableParsed', {
-      contents: JSON.parse(resultsFileContents)
+      warnings: JSON.parse(warningsFileContents),
+      infoNotices: JSON.parse(infoNoticesFileContents)
     })
   } else {
     let output = fs.readFileSync(outputFile).toString();
@@ -247,7 +253,8 @@ function openFileDialog() {
         warnings: warnings,
         infoNotices: infoNotices
       })
-      fs.writeFileSync(resultsFile, JSON.stringify(warnings))
+      fs.writeFileSync(warningsFile, JSON.stringify(warnings))
+      fs.writeFileSync(infoNoticesFile, JSON.stringify(infoNotices))
     }
   }
 

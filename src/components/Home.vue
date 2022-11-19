@@ -141,8 +141,8 @@ export default {
     }
   },
   mounted() {
-    ipcRenderer.on('overridesParsed', (event, args) => {
-      if (args.contents) {
+    ipcRenderer.on('outputTableParsed', (event, args) => {
+      if (args.warnings) {
         this.activeScreen = 'editor';
       }
     });

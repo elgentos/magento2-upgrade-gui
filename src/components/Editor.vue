@@ -8,11 +8,11 @@
       >
         <option>Select a preference/plugin/override</option>
         <option
-          v-for="(override, index) in warnings"
+          v-for="(warning, index) in warnings"
           :key="index"
           :value="index"
         >
-          {{ override[1] }}: {{ override[2] }} {{ override[3] }} ({{ override[0] }})
+          {{ warning[1] }}: {{ warning[2] }} {{ warning[3] }} ({{ warning[0] }})
         </option>
       </select>
     </div>
@@ -174,17 +174,17 @@ export default {
     };
   },
   mounted() {
-    ipcRenderer.on("outputTableParsed", (event, args) => {
+    ipcRenderer.on('outputTableParsed', (event, args) => {
       this.warnings = args.warnings;
       this.infoNotices = args.infoNotices;
     });
-    ipcRenderer.on("vendorCheckDiffs", (event, args) => {
+    ipcRenderer.on('vendorCheckDiffs', (event, args) => {
       this.vendorCheckDiffs = args.contents;
     });
-    ipcRenderer.on("selectedMagento2ProjectDir", (event, args) => {
+    ipcRenderer.on('selectedMagento2ProjectDir', (event, args) => {
       this.selectedMagento2ProjectDir = args.dir;
     });
-    ipcRenderer.on("navigationBar", (event, args) => {
+    ipcRenderer.on('navigationBar', (event, args) => {
       this.processActionBar(args.action);
     });
   },
