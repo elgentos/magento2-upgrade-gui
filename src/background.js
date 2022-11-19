@@ -162,15 +162,20 @@ function createWindow() {
 
 function parseOutputTable(output) {
   let warnings = output.split("\n").filter(function (line) {
-    // See https://github.com/AmpersandHQ/ampersand-magento2-upgrade-patch-helper/blob/master/src/Ampersand/PatchHelper/Helper/PatchOverrideValidator.php#L7
-    return line.indexOf('Preference') > 0 || line.indexOf('Plugin') > 0 || line.indexOf('Override') > 0;
+    return line.indexOf(' WARN ') > 0;
   }).map(function (line) {
     let result = line.split("|").map(function (item) { return item.trim(); }).splice(1);
     result.unshift('unresolved');
     return result;
   });
 
-  return [warnings, [1,2,3,4]];
+  let infoNotices = output.split("\n").filter(function (line) {
+    return line.indexOf(' INFO ') > 0;
+  }).map(function (line) {
+    return line.split("|").map(function (item) { return item.trim(); }).splice(1);
+  });
+
+  return [warnings, infoNotices];
 }
 
 function parseVendorCheck(vendorCheck) {

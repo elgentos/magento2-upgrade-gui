@@ -63,6 +63,7 @@
         Next (→)
       </button>
       <button
+          v-if="infoNotices.length > 0"
           @click="processActionBar('info')"
           type="button"
           class="shadow-sm rounded-md relative inline-flex items-center px-4 py-2 ml-4 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
@@ -251,7 +252,6 @@ export default {
       this.relativePath = this.getRelativePath(customFilePath);
       this.relativePathVendorFile = this.getRelativePath(vendorFilePath);
       this.relativePathVendorFileOrig = this.relativePathVendorFile.replace('vendor', 'vendor_orig');
-      this.infoNotices = [1,2,3];
       customFilePath = this.getAbsolutePath(customFilePath);
       this.customFileType = customFilePath.split(".").pop();
       if (this.customFileType === "phtml") {
@@ -288,9 +288,12 @@ export default {
         this.selectedFile = element.value;
       }
 
-      let [,,, customFilePath] = this.warnings[this.selectedFile];
+      if (action === 'info') {
+        alert('Not yet implemented! Check the patch helper output table for INFO notices.');
+      }
 
       if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped' || action === 'unresolved') {
+        let [,,, customFilePath] = this.warnings[this.selectedFile];
         this.warnings[this.selectedFile][0] = action;
         this.writeResultsJsonFile();
         let table = this.generateMarkdownTable();
