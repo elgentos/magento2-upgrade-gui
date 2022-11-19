@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "description": "A GUI tool to help you visually and easily spot differences in a three-way comparison between the version you upgraded from, the version you upgraded to, and your Magento preferences, plugins and overrides.",
   "author": "Peter Jaap Blaakmeer / elgentos",
+  "main": "background.js",
   "license": "MIT",
   "private": false,
   "scripts": {
