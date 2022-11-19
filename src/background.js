@@ -99,7 +99,8 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      contextIsolation: false,
+      nodeIntegration: true,
       devTools: true
     },
     show: false,
@@ -140,8 +141,7 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    console.log(isDevelopment)
-    if (isDevelopment) win.webContents.openDevTools({mode:'bottom'})
+    //if (isDevelopment) win.webContents.openDevTools({mode:'bottom'})
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -339,7 +339,7 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
+  if (isDevelopment) {
     // Install Vue Devtools
     try {
       await installExtension(VUEJS_DEVTOOLS)
