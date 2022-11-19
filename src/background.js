@@ -2,7 +2,7 @@
 
 import { app, Menu, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-// import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import { autoUpdater } from "electron-updater"
 import {Gitlab} from "@gitbeaker/node";
@@ -140,6 +140,8 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    console.log(isDevelopment)
+    if (isDevelopment) win.webContents.openDevTools({mode:'bottom'})
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -158,7 +160,7 @@ function createWindow() {
 }
 
 function parseOutputTable(output) {
-  return output.split("\n").filter(function (line) {
+  let warnings = output.split("\n").filter(function (line) {
     // See https://github.com/AmpersandHQ/ampersand-magento2-upgrade-patch-helper/blob/master/src/Ampersand/PatchHelper/Helper/PatchOverrideValidator.php#L7
     return line.indexOf('Preference') > 0 || line.indexOf('Plugin') > 0 || line.indexOf('Override') > 0;
   }).map(function (line) {
@@ -166,6 +168,8 @@ function parseOutputTable(output) {
     result.unshift('unresolved');
     return result;
   });
+
+  return [warnings, [1,2,3,4]];
 }
 
 function parseVendorCheck(vendorCheck) {
@@ -231,17 +235,19 @@ function openFileDialog() {
 
   if (fs.existsSync(resultsFile)) {
     let resultsFileContents = fs.readFileSync(resultsFile).toString();
-    win.webContents.send('overridesParsed', {
+    win.webContents.send('outputTableParsed', {
       contents: JSON.parse(resultsFileContents)
     })
   } else {
     let output = fs.readFileSync(outputFile).toString();
     if (output) {
-      let overrides = parseOutputTable(output);
-      win.webContents.send('overridesParsed', {
-        contents: overrides
+      let warnings, infoNotices;
+      [warnings, infoNotices] = parseOutputTable(output);
+      win.webContents.send('outputTableParsed', {
+        warnings: warnings,
+        infoNotices: infoNotices
       })
-      fs.writeFileSync(resultsFile, JSON.stringify(overrides))
+      fs.writeFileSync(resultsFile, JSON.stringify(warnings))
     }
   }
 
@@ -333,14 +339,14 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  // if (isDevelopment && !process.env.IS_TEST) {
-  //   // Install Vue Devtools
-  //   try {
-  //     await installExtension(VUEJS_DEVTOOLS)
-  //   } catch (e) {
-  //     console.error('Vue Devtools failed to install:', e.toString())
-  //   }
-  // }
+  if (isDevelopment && !process.env.IS_TEST) {
+    // Install Vue Devtools
+    try {
+      await installExtension(VUEJS_DEVTOOLS)
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
+  }
   createWindow()
   createMenu()
 })

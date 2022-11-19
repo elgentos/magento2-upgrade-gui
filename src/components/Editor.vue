@@ -1,5 +1,5 @@
 <template>
-  <div v-if="overrides">
+  <div v-if="warnings">
     <div>
       <select
         @change="setSelectedFile"
@@ -8,7 +8,7 @@
       >
         <option>Select a preference/plugin/override</option>
         <option
-          v-for="(override, index) in overrides"
+          v-for="(override, index) in warnings"
           :key="index"
           :value="index"
         >
@@ -18,49 +18,56 @@
     </div>
 
     <span
-      class="relative z-0 inline-flex my-4 rounded-md shadow-sm"
+      class="relative z-0 inline-flex my-4 rounded-md"
     >
       <button
           @click="processActionBar('previous')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 ml-2 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-400 border border-gray-300 rounded-l-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 ml-2 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-400 border border-gray-300 rounded-l-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Previous (←)
       </button>
       <button
           @click="processActionBar('resolved')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Resolved (R)
       </button>
       <button
           @click="processActionBar('skipped')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Skipped (S)
       </button>
       <button
           @click="processActionBar('cannot-fix')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Cannot fix (N)
       </button>
       <button
           @click="processActionBar('unresolved')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-white-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-white-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Mark as Unresolved (U)
       </button>
       <button
           @click="processActionBar('next')"
           type="button"
-          class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-200 border border-gray-300 rounded-r-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-gray-200 border border-gray-300 rounded-r-md hover:text-gray-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
       >
         Next (→)
+      </button>
+      <button
+          @click="processActionBar('info')"
+          type="button"
+          class="shadow-sm rounded-md relative inline-flex items-center px-4 py-2 ml-4 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+      >
+        INFO notices ({{ infoNotices.length }})
       </button>
     </span>
 
@@ -152,7 +159,7 @@ export default {
       relativePathVendorFile: "",
       relativePathVendorFileOrig: "",
       classMap: null,
-      overrides: null,
+      warnings: null,
       selectedOverride: null,
       vendorCheckDiffs: [],
       vendorFileContent: "",
@@ -162,12 +169,14 @@ export default {
       selectedMagento2ProjectDir: null,
       lineNumbers: true,
       methodName: null,
-      selectedFile: null
+      selectedFile: null,
+      infoNotices: []
     };
   },
   mounted() {
-    ipcRenderer.on("overridesParsed", (event, args) => {
-      this.overrides = args.contents;
+    ipcRenderer.on("outputTableParsed", (event, args) => {
+      this.warnings = args.warnings;
+      this.infoNotices = args.infoNotices;
     });
     ipcRenderer.on("vendorCheckDiffs", (event, args) => {
       this.vendorCheckDiffs = args.contents;
@@ -208,13 +217,13 @@ export default {
       this.selectedFile = event.target.value;
     },
     loadOverride: function() {
-      if (!(this.selectedFile in this.overrides)) {
+      if (!(this.selectedFile in this.warnings)) {
         this.selectedOverride = null;
         return;
       }
 
       let methodName = null;
-      let [,, type, vendorFilePath, customFilePath] = this.overrides[this.selectedFile];
+      let [,, type, vendorFilePath, customFilePath] = this.warnings[this.selectedFile];
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
@@ -242,6 +251,7 @@ export default {
       this.relativePath = this.getRelativePath(customFilePath);
       this.relativePathVendorFile = this.getRelativePath(vendorFilePath);
       this.relativePathVendorFileOrig = this.relativePathVendorFile.replace('vendor', 'vendor_orig');
+      this.infoNotices = [1,2,3];
       customFilePath = this.getAbsolutePath(customFilePath);
       this.customFileType = customFilePath.split(".").pop();
       if (this.customFileType === "phtml") {
@@ -278,10 +288,10 @@ export default {
         this.selectedFile = element.value;
       }
 
-      let [,,, customFilePath] = this.overrides[this.selectedFile];
+      let [,,, customFilePath] = this.warnings[this.selectedFile];
 
       if (action === 'resolved' || action === 'cannot-fix' || action === 'skipped' || action === 'unresolved') {
-        this.overrides[this.selectedFile][0] = action;
+        this.warnings[this.selectedFile][0] = action;
         this.writeResultsJsonFile();
         let table = this.generateMarkdownTable();
         this.writeMarkdownTableToFile.call(this, table);
@@ -291,7 +301,7 @@ export default {
       }
     },
     generateMarkdownTable: function () {
-      let table = markdownTable([['Status', 'Type', 'Vendor file', 'Project file']].concat(this.overrides));
+      let table = markdownTable([['Status', 'Type', 'Vendor file', 'Project file']].concat(this.warnings));
       table = table.replaceAll('unresolved', ':grey_question:');
       table = table.replaceAll('resolved', ':white_check_mark:');
       table = table.replaceAll('skipped', ':arrow_heading_down:');
@@ -301,7 +311,7 @@ export default {
       fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
     },
     writeResultsJsonFile: function () {
-      fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.overrides));
+      fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.warnings));
     },
     getAbsolutePath(path) {
       if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {
