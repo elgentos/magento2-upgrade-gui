@@ -248,6 +248,11 @@ export default {
         }
       }
 
+      // To fix paths like "vendor/amasty/module-shop-by-brand/etc/db_schema.xml (amasty_amshopby_option_setting)"
+      if (customFilePath.indexOf(" ") > -1) {
+        customFilePath = customFilePath.split(" ").shift();
+      }
+
       this.methodName = methodName;
       this.relativePath = this.getRelativePath(customFilePath);
       this.relativePathVendorFile = this.getRelativePath(vendorFilePath);
@@ -314,7 +319,8 @@ export default {
       fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.md', table);
     },
     writeResultsJsonFile: function () {
-      fs.writeFileSync(this.selectedMagento2ProjectDir + '/results.json', JSON.stringify(this.warnings));
+      fs.writeFileSync(this.selectedMagento2ProjectDir + '/warnings.json', JSON.stringify(this.warnings));
+      fs.writeFileSync(this.selectedMagento2ProjectDir + '/infoNotices.json', JSON.stringify(this.infoNotices));
     },
     getAbsolutePath(path) {
       if (path.indexOf(this.selectedMagento2ProjectDir) > -1) {

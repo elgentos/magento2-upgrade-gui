@@ -31,6 +31,11 @@ const store = new Store(
 
 let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 
+if (process.argv[2]) {
+  console.log('Selected Magento 2 project dir is ' + process.argv[2]);
+  selectedMagento2ProjectDir = process.argv[2];
+}
+
 if (store.get('gitlab.token') && store.get('gitlab.project_id') && store.get('gitlab.issue_id')) {
   gitlabApi = new Gitlab({
     host: store.get('gitlab.host'),
@@ -139,6 +144,12 @@ function createWindow() {
     }
   })
 
+  win.webContents.on('did-finish-load', function() {
+    if (selectedMagento2ProjectDir) {
+      magento2ProjectDirSelected(selectedMagento2ProjectDir);
+    }
+  })
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -202,7 +213,7 @@ function openFileDialog() {
   selectedMagento2ProjectDir = dialog.showOpenDialogSync({
     title: 'Select Magento 2 project directory',
     properties: [
-        'openDirectory'
+      'openDirectory'
     ]
   })
 
@@ -212,6 +223,10 @@ function openFileDialog() {
 
   selectedMagento2ProjectDir = selectedMagento2ProjectDir[0];
 
+  magento2ProjectDirSelected(selectedMagento2ProjectDir);
+}
+
+function magento2ProjectDirSelected(selectedMagento2ProjectDir) {
   const warningsFile = selectedMagento2ProjectDir + '/warnings.json';
   const infoNoticesFile = selectedMagento2ProjectDir + '/infoNotices.json';
 
