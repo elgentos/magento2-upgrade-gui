@@ -10,6 +10,7 @@ import fs from "fs";
 const util = require('util');
 const { exec } = require('child_process');
 const Store = require('electron-store');
+const path = require('path');
 
 // Set up store data
 const store = new Store(
@@ -31,12 +32,17 @@ const store = new Store(
 
 let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 
-if (process.argv[2]) {
-  console.log('Selected Magento 2 project dir is ' + process.argv[2]);
+if (process.argv[1] === 'dist_electron' && process.argv[2]) { // Development
   selectedMagento2ProjectDir = process.argv[2];
-} else if (process.argv[1]) {
-  console.log('Selected Magento 2 project dir is ' + process.argv[1]);
+} else if (process.argv[1] && process.argv[1] !== 'dist_electron') { // Binary
   selectedMagento2ProjectDir = process.argv[1];
+}
+
+if (selectedMagento2ProjectDir) {
+  if (selectedMagento2ProjectDir.indexOf('/') !== 0) {
+    selectedMagento2ProjectDir = path.resolve(selectedMagento2ProjectDir);
+  }
+  console.log('Selected Magento 2 project dir is ' + selectedMagento2ProjectDir);
 }
 
 if (store.get('gitlab.token') && store.get('gitlab.project_id') && store.get('gitlab.issue_id')) {
