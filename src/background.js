@@ -34,6 +34,9 @@ let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 if (process.argv[2]) {
   console.log('Selected Magento 2 project dir is ' + process.argv[2]);
   selectedMagento2ProjectDir = process.argv[2];
+} else if (process.argv[1]) {
+  console.log('Selected Magento 2 project dir is ' + process.argv[1]);
+  selectedMagento2ProjectDir = process.argv[1];
 }
 
 if (store.get('gitlab.token') && store.get('gitlab.project_id') && store.get('gitlab.issue_id')) {
