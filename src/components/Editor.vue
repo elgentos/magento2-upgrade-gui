@@ -4,13 +4,16 @@
       <select
         @change="setSelectedFile"
         id="override"
-        class="block w-full py-2 pl-3 mt-1 -ml-1 -mr-2 text-base leading-6 bg-orange-200 border-gray-300 rounded-md form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+        class="block w-full py-2 pl-3 mt-1 -ml-1 -mr-2 text-base leading-6 border-gray-300 rounded-md form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+        :class="resolveStatusBackground(warnings[selectedFile] ? warnings[selectedFile][0] : null)"
       >
         <option>Select a preference/plugin/override</option>
         <option
           v-for="(warning, index) in warnings"
           :key="index"
           :value="index"
+          class="text-gray-900"
+          :class="resolveStatusBackground(warning[0])"
         >
           {{ warning[1] }}: {{ warning[2] }} {{ warning[3] }} ({{ warning[0] }})
         </option>
@@ -30,28 +33,32 @@
       <button
           @click="processActionBar('resolved')"
           type="button"
-          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-green-400 border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white border border-gray-300 hover:text-green-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          :class="resolveStatusBackground('resolved')"
       >
         Mark as Resolved (R)
       </button>
       <button
           @click="processActionBar('skipped')"
           type="button"
-          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-orange-200 border border-gray-300 hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out border border-gray-300 hover:text-orange-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          :class="resolveStatusBackground('skipped')"
       >
         Mark as Skipped (S)
       </button>
       <button
           @click="processActionBar('cannot-fix')"
           type="button"
-          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-red-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          :class="resolveStatusBackground('cannot-fix')"
       >
         Mark as Cannot fix (N)
       </button>
       <button
           @click="processActionBar('unresolved')"
           type="button"
-          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white bg-white-200 border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          class="shadow-sm relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out border border-gray-300 hover:text-red-900 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-700"
+          :class="resolveStatusBackground('unresolved')"
       >
         Mark as Unresolved (U)
       </button>
@@ -340,6 +347,18 @@ export default {
     },
     runGitCommands(file) {
       ipcRenderer.send('run-git-commands', {file: file});
+    },
+    resolveStatusBackground(status) {
+      switch (status) {
+        case 'resolved':
+          return 'bg-green-400';
+        case 'skipped':
+          return 'bg-orange-200';
+        case 'cannot-fix':
+          return 'bg-red-200';
+        default:
+          return 'bg-white';
+      }
     }
   }
 };
