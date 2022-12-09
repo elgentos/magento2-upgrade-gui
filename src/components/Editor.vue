@@ -231,7 +231,8 @@ export default {
       }
 
       let methodName = null;
-      let [,, type, vendorFilePath, customFilePath] = this.warnings[this.selectedFile];
+      // eslint-disable-next-line
+      let [resolved, level, type, vendorFilePath, customFilePath] = this.warnings[this.selectedFile];
       this.selectedOverride = vendorFilePath;
       this.type = type;
 
@@ -338,7 +339,7 @@ export default {
     getRelativePath(path) {
       if (path.indexOf('/data/') > -1) {
         // support for https://github.com/JeroenBoersma/docker-compose-development/
-        path = path.replace(/\/data\/(.*)\/magento2\//i, '', path);
+        path = path.replace(/\/data\/(.*?)\/magento2\//i, '', path);
       }
       return path.replace(this.selectedMagento2ProjectDir + "/", "");
     },
