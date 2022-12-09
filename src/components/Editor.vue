@@ -261,6 +261,10 @@ export default {
         customFilePath = customFilePath.split(" ").shift();
       }
 
+      if (type.indexOf('DB schema') > -1) {
+        customFilePath = vendorFilePath.replace('vendor', 'vendor_orig');
+      }
+
       this.methodName = methodName;
       this.relativePath = this.getRelativePath(customFilePath);
       this.relativePathVendorFile = this.getRelativePath(vendorFilePath);
@@ -273,7 +277,11 @@ export default {
       if (fs.existsSync(customFilePath)) {
         this.customFileContent = fs.readFileSync(customFilePath).toString();
       } else {
-        this.customFileContent = "Could not find contents of " + customFilePath;
+        if (type.indexOf('DB schema added') > -1) {
+          this.customFileContent = "No file found in previous install - this is a new file. See the diff on the left hand side to see the actual changes.";
+        } else {
+          this.customFileContent = "Could not find contents of " + customFilePath;
+        }
       }
 
       this.vendorFileType = "diff";

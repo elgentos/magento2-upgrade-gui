@@ -178,7 +178,7 @@ function createWindow() {
 
 function parseOutputTable(output) {
   let warnings = output.split("\n").filter(function (line) {
-    return line.indexOf(' WARN ') > -1 && line.indexOf('DB schema') < 0;
+    return line.indexOf(' WARN ') > -1;
   }).map(function (line) {
     let result = line.split("|").map(function (item) { return item.trim(); }).splice(1);
     result.unshift('unresolved');
