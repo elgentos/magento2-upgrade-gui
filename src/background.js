@@ -250,7 +250,7 @@ function magento2ProjectDirSelected(selectedMagento2ProjectDir) {
   }
 
   const outputFile = selectedMagento2ProjectDir + '/patch-helper-output.txt';
-  if (!fs.existsSync(outputFile)) {
+  if (!fs.existsSync(warningsFile) && !fs.existsSync(infoNoticesFile) && !fs.existsSync(outputFile)) {
     dialog.showErrorBox('File not found', 'No patch-helper-output.txt overview file found in your Magento 2 project directory!');
   }
 
