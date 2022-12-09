@@ -32,11 +32,7 @@ const store = new Store(
 
 let win, vendorCheckDiffs,  selectedMagento2ProjectDir, gitlabApi;
 
-if (process.argv[1] === 'dist_electron' && process.argv[2]) { // Development
-  selectedMagento2ProjectDir = process.argv[2];
-} else if (process.argv[1] && process.argv[1] !== 'dist_electron') { // Binary
-  selectedMagento2ProjectDir = process.argv[1];
-}
+selectedMagento2ProjectDir = app.commandLine.getSwitchValue('dir');
 
 if (selectedMagento2ProjectDir) {
   if (selectedMagento2ProjectDir.indexOf('/') !== 0) {
