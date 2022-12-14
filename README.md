@@ -81,7 +81,7 @@ It is stored in your home dir, but the location differs per OS. On Linux, it is 
 
 ## PhpStorm integration
 
-You can click on the file path on the right hand side (or on the "Original vendor file" and "New vendor file" links on the left hand side) to have it open the file in PhpStorm (make sure you have the project open first). To disable JetBrains warning `'file' API is requested. Do you trust unknown host?`, you can go to `File > Settings > Build, Execution, Deployment > Debugger` and Check the `Allow unsigned requests` in the Built-in Server section.
+If you have the [IDE Remote Control](https://plugins.jetbrains.com/plugin/19991-ide-remote-control) plugin installed (PhpStorm 2022.3 and later) and the project open, you can click on the file path on the right hand side (or on the "Original vendor file" and "New vendor file" links on the left hand side) to have it open the file in PhpStorm. To disable JetBrains warning `'file' API is requested. Do you trust unknown host?`, you can go to `File > Settings > Build, Execution, Deployment > Debugger` and Check the `Allow unsigned requests` in the Built-in Server section.
 
 ## Development
 
