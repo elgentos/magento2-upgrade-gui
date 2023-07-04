@@ -349,6 +349,10 @@ export default {
         // support for https://github.com/JeroenBoersma/docker-compose-development/
         path = path.replace(/\/data\/(.*?)\/magento2\//i, '', path);
       }
+      if (path.indexOf('/builds/') > -1) {
+        // support for Gitlab CI auto-upgrade job artifacts
+        path = path.replace(/\/builds\/(.*?)\/magento2\//i, '', path);
+      }
       return path.replace(this.selectedMagento2ProjectDir + "/", "");
     },
     updateGitlabIssueNote(table) {
